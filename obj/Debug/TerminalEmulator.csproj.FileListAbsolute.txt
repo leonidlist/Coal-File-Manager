@@ -1,0 +1,7 @@
+C:\Users\Leonid\Desktop\Terminal Emulator\bin\Debug\TerminalEmulator.exe.config
+C:\Users\Leonid\Desktop\Terminal Emulator\bin\Debug\TerminalEmulator.exe
+C:\Users\Leonid\Desktop\Terminal Emulator\bin\Debug\TerminalEmulator.pdb
+C:\Users\Leonid\Desktop\Terminal Emulator\obj\Debug\TerminalEmulator.csprojAssemblyReference.cache
+C:\Users\Leonid\Desktop\Terminal Emulator\obj\Debug\TerminalEmulator.csproj.CoreCompileInputs.cache
+C:\Users\Leonid\Desktop\Terminal Emulator\obj\Debug\TerminalEmulator.exe
+C:\Users\Leonid\Desktop\Terminal Emulator\obj\Debug\TerminalEmulator.pdb

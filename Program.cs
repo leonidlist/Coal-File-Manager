@@ -95,10 +95,25 @@ mkdir - создать каталог");
         private void CpCommand(List<string> args) {
             if (File.Exists(_currentDirectory.FullName + args[0]) && Directory.Exists(args[1])) {
                 File.Copy(_currentDirectory.FullName + args[0], args[1] + args[0]);
+                return;
             }
+            FileInfo fileInfo = new FileInfo(args[0]);
+            if (fileInfo.Exists && Directory.Exists(args[1])) {
+                File.Copy(args[0], args[1] + fileInfo.Name);
+                return;
+            }
+            Console.WriteLine("Что-то пошло не так.");
         }
         private void RmCommand(List<string> args) {
-
+            if(File.Exists(_currentDirectory.FullName + args[0])) {
+                File.Delete(_currentDirectory.FullName + args[0]);
+                return;
+            }
+            if(File.Exists(args[0])) {
+                File.Delete(args[0]);
+                return;
+            }
+            Console.WriteLine("Что-то пошло не так.");
         }
         private void MkDirCommand(List<string> args) {
 
