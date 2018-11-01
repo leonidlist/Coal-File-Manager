@@ -67,24 +67,28 @@ mkdir - создать каталог");
                 Console.WriteLine($"\t{file.Name}");
             }
         }
-        public void CdCommand(List<string> args) {
+        public bool CdCommand(List<string> args) {
             try {
                 DirectoryInfo directoryInfo = new DirectoryInfo(_currentDirectory + args[0]);
                 if (directoryInfo.Exists) {
                     string newPath = Regex.Replace(directoryInfo.FullName + @"\", @"\\{2}", @"\");
                     _currentDirectory = new DirectoryInfo(newPath);
+                    return true;
                 }
                 else {
                     Console.WriteLine("Такая директория не существует.");
+                    return false;
                 }
             }
             catch (Exception e) {
                 DirectoryInfo directoryInfo = new DirectoryInfo(args[0]);
                 if (directoryInfo.Exists) {
                     _currentDirectory = new DirectoryInfo(args[0]);
+                    return true;
                 }
                 else {
                     Console.WriteLine("Такая директория не существует.");
+                    return false;
                 }
             }
         }
