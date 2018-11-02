@@ -14,6 +14,8 @@ namespace TerminalEmulator {
         private event Action ArrowUpKeyPressed;
         private event Action EscapeKeyPressed;
         private event Action EnterKeyPressed;
+        private event Action F2KeyPressed;
+        private event Action F9KeyPressed;
         private readonly int _maxBufferHeight;
         private readonly int _maxBufferWidth;
         private readonly int _mainWindowHeight;
@@ -24,6 +26,7 @@ namespace TerminalEmulator {
         private object _selectedItem;
         private int _scrollOffset = 0;
         MyConsole console;
+        bool _isPanelOpened = false;
         public ConsoleCore() {
             _selected = 0;
             console = new MyConsole();
@@ -38,6 +41,8 @@ namespace TerminalEmulator {
             ArrowDownKeyPressed += ArrowDownKeyPressedHandler;
             EnterKeyPressed += EnterKeyPressedHandler;
             EscapeKeyPressed += EscapeKeyPressedHandler;
+            F2KeyPressed += F2KeyPressedHandler;
+            F9KeyPressed += F9KeyPressedHandler;
         }
         public void Start() {
             DrawBorder();
@@ -96,9 +101,10 @@ namespace TerminalEmulator {
         }
         private void ArrowDownKeyPressedHandler() {
             _selected++;
-            if(_selected > directoryContains.Count)
-                _selected = directoryContains.Count - 1;
-            if(_selected > _mainWindowHeight-3) {
+            if(_selected > directoryContains.Count-1) {
+                _selected = directoryContains.Count-1;
+            }
+            else if(_selected > _mainWindowHeight-3+_scrollOffset && _selected < directoryContains.Count) {
                 _scrollOffset++;
                 ClearMainWindow();
                 DrawDirectoriesAndFiles(_scrollOffset);
@@ -108,8 +114,10 @@ namespace TerminalEmulator {
         }
         private void ArrowUpKeyPressedHandler() {
             _selected--;
-            if(_selected < 0)
+            if(_selected < 0) {
                 _selected = 0;
+                return;
+            }
             if(_selected < _scrollOffset) {
                 _scrollOffset--;
                 ClearMainWindow();
@@ -119,15 +127,22 @@ namespace TerminalEmulator {
             DrawDirectoriesAndFiles(_scrollOffset);
         }
         private void EnterKeyPressedHandler() {
-            _selected = 0;
-            console.CdCommand(new List<string> {
-                $"{console.GetCurrentDirectory}/{((DirectoryInfo)_selectedItem).Name}"
-            });
-            DrawOnTopCurrentDirectory();
-            ClearMainWindow();
-            DrawDirectoriesAndFiles();
+            if(_selectedItem is DirectoryInfo) {
+                _selected = 0;
+                _isPanelOpened = false;
+                console.CdCommand(new List<string> {
+                    $"{console.GetCurrentDirectory}/{((DirectoryInfo)_selectedItem).Name}"
+                });
+                DrawOnTopCurrentDirectory();
+                ClearMainWindow();
+                DrawDirectoriesAndFiles();
+            }
+            else {
+
+            }
         }
         private void EscapeKeyPressedHandler() {
+            _scrollOffset = 0;
             _selected = 0;
             console.CdCommand(new List<string> {
                 $"{console.GetCurrentDirectory}/.."
@@ -135,6 +150,48 @@ namespace TerminalEmulator {
             DrawOnTopCurrentDirectory();
             ClearMainWindow();
             DrawDirectoriesAndFiles();
+        }
+        private void F2KeyPressedHandler() {
+            if(!_isPanelOpened) {
+                DrawAdditionalPanel();
+                _isPanelOpened = true;
+                if (_selectedItem is FileInfo) {
+                    FileInfo tmp = _selectedItem as FileInfo;
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 2);
+                    Console.Write($"File: {tmp.Name}");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 3);
+                    Console.Write($"File size: {(double)(tmp.Length / 1000000)} MB");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 4);
+                    Console.Write($"File creation time: {tmp.CreationTime}");
+                }
+                else if (_selectedItem is DirectoryInfo) {
+                    DirectoryInfo tmp = _selectedItem as DirectoryInfo;
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 2);
+                    Console.Write($"Folder: {tmp.Name}");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 3);
+                    Console.Write($"Folder creation time: {tmp.CreationTime}");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 4);
+                    Console.Write($"Folders inside: {tmp.GetDirectories().Length}");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 5);
+                    Console.Write($"Files inside: {tmp.GetFiles().Length}");
+                    Console.SetCursorPosition(_mainWindowWidth - 58, 6);
+                    double totalSize = 0;
+                    for (int i = 0; i < tmp.GetFiles().Length - 1; i++) {
+                        totalSize += tmp.GetFiles()[i].Length;
+                    }
+                    Console.WriteLine($"Space usage(excluding folders): {(double)(totalSize / 1000000)} MB");
+                }
+                _isPanelOpened = true;
+            }
+            else {
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+                _isPanelOpened = false;
+            }
+        }
+        private void F9KeyPressedHandler() {
+            Console.Clear();
+            Environment.Exit(0);
         }
         private void Selecter() {
             while (true) {
@@ -152,6 +209,12 @@ namespace TerminalEmulator {
                 if(keyInfo.Key == ConsoleKey.Escape) {
                     EscapeKeyPressed?.Invoke();
                 }
+                if(keyInfo.Key == ConsoleKey.F2) {
+                    F2KeyPressed?.Invoke();
+                }
+                if(keyInfo.Key == ConsoleKey.F9) {
+                    F9KeyPressed?.Invoke();
+                }
             }
         }
         private void ClearMainWindow() {
@@ -161,14 +224,44 @@ namespace TerminalEmulator {
                 Console.Write(" ".MultiplySpace(_mainWindowWidth-3));
             }
         }
+        private void DrawAdditionalPanel() {
+            for(int i = 0; i < _mainWindowHeight-2; i++) {
+                Console.SetCursorPosition(_mainWindowWidth - 60, i+1);
+                Console.Write("│");
+            }
+        }
+        //private void DrawInfoLine() {
+        //    Console.SetCursorPosition(2, _mainWindowHeight + 2);
+        //    Console.Write(" ".MultiplySpace(_mainWindowWidth));
+        //    Console.SetCursorPosition(2, _mainWindowHeight + 2);
+        //    if (_selectedItem is FileInfo) {
+        //        Console.Write((_selectedItem as FileInfo).Name);
+        //    }
+        //    if (_selectedItem is FileInfo) {
+        //        Console.Write($"    {(double)((_selectedItem as FileInfo).Length / 1000000)} MB  {(_selectedItem as FileInfo).CreationTime}");
+        //    }
+        //}
         private void DrawDownMenu() {
-            DrawBlackBgForMenu();
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(2, _mainWindowHeight + 3);
             Console.Write("F1 Help");
             Console.SetCursorPosition(12, _mainWindowHeight + 3);
-            Console.Write("F2 UserMn");
+            Console.Write("F2 SelInfo");
+            Console.SetCursorPosition(25, _mainWindowHeight + 3);
+            Console.Write("F3 Move");
+            Console.SetCursorPosition(35, _mainWindowHeight + 3);
+            Console.Write("F4 Edit");
+            Console.SetCursorPosition(45, _mainWindowHeight + 3);
+            Console.Write("F5 Copy");
+            Console.SetCursorPosition(55, _mainWindowHeight + 3);
+            Console.Write("F6 MkFold");
+            Console.SetCursorPosition(67, _mainWindowHeight + 3);
+            Console.Write("F7 Delete");
+            Console.SetCursorPosition(79, _mainWindowHeight + 3);
+            Console.Write("F8 MkFile");
+            Console.SetCursorPosition(91, _mainWindowHeight + 3);
+            Console.Write("F9 Quit");
             Console.ResetColor();
         }
         private void DrawTopBorder() {

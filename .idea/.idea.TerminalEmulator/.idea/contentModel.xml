@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Leonid\.Rider2018.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Leonid\.Rider2018.2\system\resharper-host\local\Transient\ReSharperHost\v182\SolutionCaches\_TerminalEmulator.-992002690.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Leonid\Desktop\Terminal Emulator" t="IncludeRecursive">
+      <e p="App.config" t="Include" />
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="ConsoleCore.cs" t="Include" />
+      <e p="Helpers.cs" t="Include" />
+      <e p="MyConsole.cs" t="Include" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Program.cs" t="Include" />
+      <e p="Properties" t="Include">
+        <e p="AssemblyInfo.cs" t="Include" />
+      </e>
+      <e p="TerminalEmulator.csproj" t="IncludeRecursive" />
+      <e p="TerminalEmulator.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
