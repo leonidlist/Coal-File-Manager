@@ -93,29 +93,6 @@ namespace TerminalEmulator {
                     Console.ResetColor();
                 }
             }
-            #region comment
-            //for (int i = 0; i < _mainWindowHeight-3; i++) {
-            //    Console.SetCursorPosition(1, i+2);
-            //    if (i+offset < dirs.Length) {
-            //        if(i == _selected) {
-            //            _selectedItem = dirs[i + offset];
-            //            Console.BackgroundColor = ConsoleColor.White;
-            //            Console.ForegroundColor = ConsoleColor.Black;
-            //        }
-            //        Console.WriteLine($"{dirs[i+offset].Name}/");
-            //        Console.ResetColor();
-            //    }
-            //    else if (i - dirs.Length + offset < files.Length) {
-            //        if (i == _selected) {
-            //            Console.BackgroundColor = ConsoleColor.White;
-            //            Console.ForegroundColor = ConsoleColor.Black;
-            //        }
-            //        Console.WriteLine($"{files[i-dirs.Length+offset].Name}");
-            //        Console.ResetColor();
-            //    }
-            //}
-            //Console.ResetColor();
-            #endregion
         }
         private void ArrowDownKeyPressedHandler() {
             _selected++;
