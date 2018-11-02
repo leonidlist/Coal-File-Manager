@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,11 @@ using System.Text.RegularExpressions;
 
 namespace TerminalEmulator {
     sealed class ConsoleCore {
+        ArrayList directoryContains;
+        private event Action ArrowDownKeyPressed;
+        private event Action ArrowUpKeyPressed;
+        private event Action EscapeKeyPressed;
+        private event Action EnterKeyPressed;
         private readonly int _maxBufferHeight;
         private readonly int _maxBufferWidth;
         private readonly int _mainWindowHeight;
@@ -16,6 +22,7 @@ namespace TerminalEmulator {
         private readonly int _menuHeight;
         private int _selected;
         private object _selectedItem;
+        private int _scrollOffset = 0;
         MyConsole console;
         public ConsoleCore() {
             _selected = 0;
@@ -27,13 +34,17 @@ namespace TerminalEmulator {
             _mainWindowWidth = _maxBufferWidth;
             _menuHeight = _maxBufferHeight - _mainWindowHeight;
             _menuWidth = _maxBufferWidth;
+            ArrowUpKeyPressed += ArrowUpKeyPressedHandler;
+            ArrowDownKeyPressed += ArrowDownKeyPressedHandler;
+            EnterKeyPressed += EnterKeyPressedHandler;
+            EscapeKeyPressed += EscapeKeyPressedHandler;
         }
         public void Start() {
             DrawBorder();
             DrawOnTopCurrentDirectory();
             DrawDirectoriesAndFiles();
+            DrawDownMenu();
             Selecter();
-            //DrawDownMenu();
         }
         private void SetConsoleSettings() {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -58,63 +69,111 @@ namespace TerminalEmulator {
             Console.ResetColor();
         }
         private void DrawDirectoriesAndFiles(int offset = 0) {
-            DirectoryInfo[] dirs = console.GetCurrentDirectory.GetDirectories();
-            FileInfo[] files = console.GetCurrentDirectory.GetFiles();
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            for (int i = 2; i < _mainWindowHeight-1; i++) {
-                if(i-2 == _selected) {
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    if(_selected < dirs.Length) {
-                        _selectedItem = dirs[i - 2];
+            directoryContains = new ArrayList();
+            directoryContains.AddRange(console.GetCurrentDirectory.GetDirectories());
+            directoryContains.AddRange(console.GetCurrentDirectory.GetFiles());
+            for(int i = 0+offset; i < _mainWindowHeight-2+offset && i < directoryContains.Count; i++) {
+                Console.SetCursorPosition(2, i + 1 - offset);
+                if(directoryContains[i] is DirectoryInfo) {
+                    if(i == _selected) {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.White;
+                        _selectedItem = directoryContains[i];
                     }
-                    else {
-                        _selectedItem = files[i - 2 - dirs.Length];
-                    }
-                }
-                Console.SetCursorPosition(1, i);
-                if(i-2 < dirs.Length) {
-                    Console.WriteLine($"{dirs[i-2].Name}/");
-                }
-                else if (i -dirs.Length-2 < files.Length) {
-                    Console.WriteLine($"{files[i-dirs.Length-2].Name}");
-                }
-                if (i - 2 == _selected)
+                    Console.Write((directoryContains[i] as DirectoryInfo).Name + "/");
                     Console.ResetColor();
+                }
+                else if(directoryContains[i] is FileInfo) {
+                    if (i == _selected) {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.White;
+                        _selectedItem = directoryContains[i];
+                    }
+                    Console.Write((directoryContains[i] as FileInfo).Name);
+                    Console.ResetColor();
+                }
             }
-            Console.ResetColor();
+            #region comment
+            //for (int i = 0; i < _mainWindowHeight-3; i++) {
+            //    Console.SetCursorPosition(1, i+2);
+            //    if (i+offset < dirs.Length) {
+            //        if(i == _selected) {
+            //            _selectedItem = dirs[i + offset];
+            //            Console.BackgroundColor = ConsoleColor.White;
+            //            Console.ForegroundColor = ConsoleColor.Black;
+            //        }
+            //        Console.WriteLine($"{dirs[i+offset].Name}/");
+            //        Console.ResetColor();
+            //    }
+            //    else if (i - dirs.Length + offset < files.Length) {
+            //        if (i == _selected) {
+            //            Console.BackgroundColor = ConsoleColor.White;
+            //            Console.ForegroundColor = ConsoleColor.Black;
+            //        }
+            //        Console.WriteLine($"{files[i-dirs.Length+offset].Name}");
+            //        Console.ResetColor();
+            //    }
+            //}
+            //Console.ResetColor();
+            #endregion
         }
-        public void Selecter() {
+        private void ArrowDownKeyPressedHandler() {
+            _selected++;
+            if(_selected > directoryContains.Count)
+                _selected = directoryContains.Count - 1;
+            if(_selected > _mainWindowHeight-3) {
+                _scrollOffset++;
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+                return;
+            }
+            DrawDirectoriesAndFiles(_scrollOffset);
+        }
+        private void ArrowUpKeyPressedHandler() {
+            _selected--;
+            if(_selected < 0)
+                _selected = 0;
+            if(_selected < _scrollOffset) {
+                _scrollOffset--;
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+                return;
+            }
+            DrawDirectoriesAndFiles(_scrollOffset);
+        }
+        private void EnterKeyPressedHandler() {
+            _selected = 0;
+            console.CdCommand(new List<string> {
+                $"{console.GetCurrentDirectory}/{((DirectoryInfo)_selectedItem).Name}"
+            });
+            DrawOnTopCurrentDirectory();
+            ClearMainWindow();
+            DrawDirectoriesAndFiles();
+        }
+        private void EscapeKeyPressedHandler() {
+            _selected = 0;
+            console.CdCommand(new List<string> {
+                $"{console.GetCurrentDirectory}/.."
+            });
+            DrawOnTopCurrentDirectory();
+            ClearMainWindow();
+            DrawDirectoriesAndFiles();
+        }
+        private void Selecter() {
             while (true) {
+                Console.SetCursorPosition(2, _mainWindowHeight + 1);
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 if(keyInfo.Key == ConsoleKey.DownArrow) {
-                    _selected++;
-                    DrawDirectoriesAndFiles();
+                    ArrowDownKeyPressed?.Invoke();
                 }
                 if(keyInfo.Key == ConsoleKey.UpArrow) {
-                    _selected--;
-                    DrawDirectoriesAndFiles();
+                    ArrowUpKeyPressed?.Invoke();
                 }
                 if(keyInfo.Key == ConsoleKey.Enter) {
-                    _selected = 0;
-                    console.CdCommand(new List<string> {
-                        $"{console.GetCurrentDirectory}/{((DirectoryInfo)_selectedItem).Name}"
-                    });
-                    DrawTopBorder();
-                    DrawOnTopCurrentDirectory();
-                    ClearMainWindow();
-                    DrawDirectoriesAndFiles();
+                    EnterKeyPressed?.Invoke();
                 }
                 if(keyInfo.Key == ConsoleKey.Escape) {
-                    _selected = 0;
-                    console.CdCommand(new List<string> {
-                        $"{console.GetCurrentDirectory}/.."
-                    });
-                    DrawTopBorder();
-                    DrawOnTopCurrentDirectory();
-                    ClearMainWindow();
-                    DrawDirectoriesAndFiles();
+                    EscapeKeyPressed?.Invoke();
                 }
             }
         }
@@ -122,34 +181,18 @@ namespace TerminalEmulator {
             Console.BackgroundColor = ConsoleColor.Black;
             for(int i = 1; i < _mainWindowHeight-1; i++) {
                 Console.SetCursorPosition(1, i);
-                Console.Write(" ".MultiplySpace(_mainWindowWidth-2));
-            }
-        }
-        private void TryScroll() {
-            ConsoleKeyInfo keyPressed = Console.ReadKey();
-            if(keyPressed.Key == ConsoleKey.Enter) {
-
+                Console.Write(" ".MultiplySpace(_mainWindowWidth-3));
             }
         }
         private void DrawDownMenu() {
-            while (true) {
-                DrawOnTopCurrentDirectory();
-                DrawBlackBgForMenu();
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.SetCursorPosition(0, _mainWindowHeight);
-                Console.Write($"{console.GetCurrentDirectory.FullName}> ");
-                string command = Console.ReadLine();
-                string[] pars = command.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                List<string> give = pars.ToList();
-                give.RemoveAt(0);
-                if (pars[0] == "cd") {
-                    if (console.CdCommand(give)) {
-                        ClearMainWindow();
-                        DrawDirectoriesAndFiles();
-                    }
-                }
-            }
+            DrawBlackBgForMenu();
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(2, _mainWindowHeight + 3);
+            Console.Write("F1 Help");
+            Console.SetCursorPosition(12, _mainWindowHeight + 3);
+            Console.Write("F2 UserMn");
+            Console.ResetColor();
         }
         private void DrawTopBorder() {
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -207,7 +250,6 @@ namespace TerminalEmulator {
             }
             Console.ResetColor();
         }
-
         ~ConsoleCore() {
             Console.ResetColor();
         }
