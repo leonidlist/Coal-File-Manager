@@ -16,6 +16,7 @@ namespace TerminalEmulator {
         private event Action EnterKeyPressed;
         private event Action F2KeyPressed;
         private event Action F5KeyPressed;
+        private event Action F6KeyPressed;
         private event Action F7KeyPressed;
         private event Action F9KeyPressed;
         private readonly int _maxBufferHeight;
@@ -45,6 +46,7 @@ namespace TerminalEmulator {
             EscapeKeyPressed += EscapeKeyPressedHandler;
             F2KeyPressed += F2KeyPressedHandler;
             F5KeyPressed += F5KeyPressedHandler;
+            F6KeyPressed += F6KeyPressedHandler;
             F7KeyPressed += F7KeyPressedHandler;
             F9KeyPressed += F9KeyPressedHandler;
         }
@@ -153,7 +155,7 @@ namespace TerminalEmulator {
                             lines.Add(allText.Substring(i * canDraw, canDraw));
                         }
                         for(int i = 0; i < lines.Count; i++) {
-                            Console.SetCursorPosition(_mainWindowWidth - 59, 4+i);
+                            Console.SetCursorPosition(_mainWindowWidth - 59, 2+i);
                             Console.Write(lines[i]);
                         }
                     }
@@ -226,9 +228,31 @@ namespace TerminalEmulator {
                 _isPanelOpened = false;
             }
         }
+        private void F6KeyPressedHandler() {
+            DrawAdditionalPanel();
+            _isPanelOpened = true;
+            Console.SetCursorPosition(_mainWindowWidth - 59, 4);
+            Console.Write("Input new directory name or path > ");
+            string dirName = Console.ReadLine();
+            console.MkDirCommand(new List<string>() {
+                dirName
+            });
+            ClearMainWindow();
+            DrawDirectoriesAndFiles(_scrollOffset);
+            _isPanelOpened = false;
+        }
         private void F7KeyPressedHandler() {
             if(_selectedItem is FileInfo) {
                 (_selectedItem as FileInfo).Delete();
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+            }
+            if(_selectedItem is DirectoryInfo) {
+                Console.Write("Warning! All files inside directory will be also deleted!");
+                (_selectedItem as DirectoryInfo).Delete(true);
+                System.Threading.Thread.Sleep(3000);
+                Console.SetCursorPosition(2, _mainWindowHeight + 1);
+                Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
                 ClearMainWindow();
                 DrawDirectoriesAndFiles(_scrollOffset);
             }
@@ -258,6 +282,9 @@ namespace TerminalEmulator {
                 }
                 if(keyInfo.Key == ConsoleKey.F5) {
                     F5KeyPressed?.Invoke();
+                }
+                if(keyInfo.Key == ConsoleKey.F6) {
+                    F6KeyPressed?.Invoke();
                 }
                 if(keyInfo.Key == ConsoleKey.F7) {
                     F7KeyPressed?.Invoke();

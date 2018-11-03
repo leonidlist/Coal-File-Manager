@@ -115,7 +115,7 @@ mkdir - создать каталог");
             }
             Console.WriteLine("Что-то пошло не так.");
         }
-        private void MkDirCommand(List<string> args) {
+        public void MkDirCommand(List<string> args) {
             try {
                 if (!Directory.Exists(_currentDirectory.FullName + args[0])) {
                     Directory.CreateDirectory(_currentDirectory.FullName + args[0]);
