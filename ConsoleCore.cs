@@ -15,6 +15,8 @@ namespace TerminalEmulator {
         private event Action EscapeKeyPressed;
         private event Action EnterKeyPressed;
         private event Action F2KeyPressed;
+        private event Action F5KeyPressed;
+        private event Action F7KeyPressed;
         private event Action F9KeyPressed;
         private readonly int _maxBufferHeight;
         private readonly int _maxBufferWidth;
@@ -42,6 +44,8 @@ namespace TerminalEmulator {
             EnterKeyPressed += EnterKeyPressedHandler;
             EscapeKeyPressed += EscapeKeyPressedHandler;
             F2KeyPressed += F2KeyPressedHandler;
+            F5KeyPressed += F5KeyPressedHandler;
+            F7KeyPressed += F7KeyPressedHandler;
             F9KeyPressed += F9KeyPressedHandler;
         }
         public void Start() {
@@ -129,13 +133,14 @@ namespace TerminalEmulator {
         private void EnterKeyPressedHandler() {
             if(_selectedItem is DirectoryInfo) {
                 _selected = 0;
+                _scrollOffset = 0;
                 _isPanelOpened = false;
                 console.CdCommand(new List<string> {
                     $"{console.GetCurrentDirectory}/{((DirectoryInfo)_selectedItem).Name}"
                 });
                 DrawOnTopCurrentDirectory();
                 ClearMainWindow();
-                DrawDirectoriesAndFiles();
+                DrawDirectoriesAndFiles(_scrollOffset);
             }
             else {
 
@@ -189,6 +194,26 @@ namespace TerminalEmulator {
                 _isPanelOpened = false;
             }
         }
+        private void F5KeyPressedHandler() {
+            if(_selectedItem is FileInfo) {
+                Console.SetCursorPosition(2, _mainWindowHeight + 1);
+                Console.Write("Input target path to copy > ");
+                string copyPath = Console.ReadLine();
+                console.CpCommand(new List<string> {
+                    "\\" + (_selectedItem as FileInfo).Name,
+                    copyPath
+                });
+                Console.SetCursorPosition(2, _mainWindowHeight + 1);
+                Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
+            }
+        }
+        private void F7KeyPressedHandler() {
+            if(_selectedItem is FileInfo) {
+                (_selectedItem as FileInfo).Delete();
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+            }
+        }
         private void F9KeyPressedHandler() {
             Console.Clear();
             Environment.Exit(0);
@@ -211,6 +236,12 @@ namespace TerminalEmulator {
                 }
                 if(keyInfo.Key == ConsoleKey.F2) {
                     F2KeyPressed?.Invoke();
+                }
+                if(keyInfo.Key == ConsoleKey.F5) {
+                    F5KeyPressed?.Invoke();
+                }
+                if(keyInfo.Key == ConsoleKey.F7) {
+                    F7KeyPressed?.Invoke();
                 }
                 if(keyInfo.Key == ConsoleKey.F9) {
                     F9KeyPressed?.Invoke();

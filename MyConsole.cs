@@ -92,7 +92,7 @@ mkdir - создать каталог");
                 }
             }
         }
-        private void CpCommand(List<string> args) {
+        public void CpCommand(List<string> args) {
             if (File.Exists(_currentDirectory.FullName + args[0]) && Directory.Exists(args[1])) {
                 File.Copy(_currentDirectory.FullName + args[0], args[1] + args[0]);
                 return;
