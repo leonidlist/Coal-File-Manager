@@ -143,7 +143,21 @@ namespace TerminalEmulator {
                 DrawDirectoriesAndFiles(_scrollOffset);
             }
             else {
-
+                if ((_selectedItem as FileInfo).Extension == ".txt") {
+                    int canDraw = 58;
+                    using (StreamReader sr = new StreamReader(File.Open((_selectedItem as FileInfo).FullName, FileMode.Open), System.Text.Encoding.Default)) {
+                        DrawAdditionalPanel();
+                        string allText = sr.ReadToEnd();
+                        List<string> lines = new List<string>();
+                        for(int i = 0; i < allText.Length/canDraw; i++) {
+                            lines.Add(allText.Substring(i * canDraw, canDraw));
+                        }
+                        for(int i = 0; i < lines.Count; i++) {
+                            Console.SetCursorPosition(_mainWindowWidth - 59, 4+i);
+                            Console.Write(lines[i]);
+                        }
+                    }
+                }
             }
         }
         private void EscapeKeyPressedHandler() {
@@ -196,15 +210,20 @@ namespace TerminalEmulator {
         }
         private void F5KeyPressedHandler() {
             if(_selectedItem is FileInfo) {
-                Console.SetCursorPosition(2, _mainWindowHeight + 1);
+                DrawAdditionalPanel();
+                _isPanelOpened = true;
+                Console.SetCursorPosition(_mainWindowWidth-59, 4);
                 Console.Write("Input target path to copy > ");
                 string copyPath = Console.ReadLine();
                 console.CpCommand(new List<string> {
                     "\\" + (_selectedItem as FileInfo).Name,
                     copyPath
                 });
-                Console.SetCursorPosition(2, _mainWindowHeight + 1);
-                Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
+                //Console.SetCursorPosition(2, _mainWindowHeight + 1);
+                //Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
+                ClearMainWindow();
+                DrawDirectoriesAndFiles(_scrollOffset);
+                _isPanelOpened = false;
             }
         }
         private void F7KeyPressedHandler() {
