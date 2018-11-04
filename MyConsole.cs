@@ -13,7 +13,7 @@ namespace TerminalEmulator {
             get => _currentDirectory;
         }
         public MyConsole() {
-            _currentDirectory = new DirectoryInfo(@"C:\");
+            _currentDirectory = new DirectoryInfo(DriveInfo.GetDrives()[0].RootDirectory.FullName);
         }
 
         public void Start() {
@@ -122,7 +122,7 @@ mkdir - создать каталог");
                     return;
                 }
             }
-            catch (Exception e) {
+            catch (Exception) {
                 if (!Directory.Exists(args[0])) {
                     Directory.CreateDirectory(args[0]);
                     return;
