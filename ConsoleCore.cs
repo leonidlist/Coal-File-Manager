@@ -10,42 +10,43 @@ using System.Text.RegularExpressions;
 namespace TerminalEmulator {
     sealed class ConsoleCore {
         private DirectoryInfo _currentDirectory;
-        ArrayList directoryContains;
+        private ArrayList _currentDirectoryContains;
+        private object _selectedItem;
         private Events _events;
         private int _maxBufferHeight;
         private int _maxBufferWidth;
         private int _mainWindowHeight;
         private int _mainWindowWidth;
         private int _selected;
-        private object _selectedItem;
-        private int _scrollOffset = 0;
+        private int _scrollOffset;
         private int _maxClearPoint;
         bool _isPanelOpened = false;
         public ConsoleCore() {
             _currentDirectory = new DirectoryInfo(DriveInfo.GetDrives()[0].RootDirectory.FullName);
-            _selected = 0;
             _events = new Events(this);
             SetConsoleSettings();
+            _selected = 0;
+            _scrollOffset = 0;
         }
         public void Start() {
             Drawers.DrawBorder(_mainWindowHeight, _mainWindowWidth);
             Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             Drawers.DrawMenu(_mainWindowHeight);
             _events.Selecter(_mainWindowHeight);
         }
         private void CalculateMaxClearPoint() {
             int max = 0;
-            for(int i = 0; i < directoryContains.Count; i++) {
-                if(directoryContains[i] is DirectoryInfo) {
-                    if((directoryContains[i] as DirectoryInfo).Name.Length > max) {
-                        max = (directoryContains[i] as DirectoryInfo).Name.Length;
+            for(int i = 0; i < _currentDirectoryContains.Count; i++) {
+                if(_currentDirectoryContains[i] is DirectoryInfo) {
+                    if((_currentDirectoryContains[i] as DirectoryInfo).Name.Length > max) {
+                        max = (_currentDirectoryContains[i] as DirectoryInfo).Name.Length;
                         continue;
                     }
                 }
-                if (directoryContains[i] is FileInfo) {
-                    if ((directoryContains[i] as FileInfo).Name.Length > max) {
-                        max = (directoryContains[i] as FileInfo).Name.Length;
+                if (_currentDirectoryContains[i] is FileInfo) {
+                    if ((_currentDirectoryContains[i] as FileInfo).Name.Length > max) {
+                        max = (_currentDirectoryContains[i] as FileInfo).Name.Length;
                         continue;
                     }
                 }
@@ -64,17 +65,17 @@ namespace TerminalEmulator {
         }
         public void ArrowDownKeyPressedHandler() {
             _selected++;
-            if(_selected > directoryContains.Count-1) {
-                _selected = directoryContains.Count-1;
+            if(_selected > _currentDirectoryContains.Count-1) {
+                _selected = _currentDirectoryContains.Count-1;
             }
-            else if(_selected > _mainWindowHeight-3+_scrollOffset && _selected < directoryContains.Count) {
+            else if(_selected > _mainWindowHeight-3+_scrollOffset && _selected < _currentDirectoryContains.Count) {
                 _scrollOffset++;
                 CalculateMaxClearPoint();
                 Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth, _maxClearPoint);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
                 return;
             }
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
         }
         public void ArrowUpKeyPressedHandler() {
             _selected--;
@@ -86,10 +87,10 @@ namespace TerminalEmulator {
                 _scrollOffset--;
                 CalculateMaxClearPoint();
                 Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth, _maxClearPoint);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
                 return;
             }
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
         }
         public void EnterKeyPressedHandler() {
             if(_selectedItem is DirectoryInfo) {
@@ -99,12 +100,10 @@ namespace TerminalEmulator {
                 _currentDirectory = _selectedItem as DirectoryInfo;
                 Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
                 Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             }
-            else {
-                if ((_selectedItem as FileInfo).Extension == ".txt") {
-                    OpenTxtFile();
-                }
+            else if((_selectedItem as FileInfo).Extension == ".txt") {
+                OpenTxtFile();
             }
         }
         private void OpenTxtFile() {
@@ -129,7 +128,7 @@ namespace TerminalEmulator {
                 _currentDirectory = _currentDirectory.Parent;
                 Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
                 Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             }
         }
         public void F2KeyPressedHandler() {
@@ -146,7 +145,7 @@ namespace TerminalEmulator {
             }
             else {
                 Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
                 _isPanelOpened = false;
             }
         }
@@ -201,7 +200,7 @@ namespace TerminalEmulator {
                 }
             }
             Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             _isPanelOpened = false;
         }
         public void F5KeyPressedHandler() {
@@ -223,7 +222,7 @@ namespace TerminalEmulator {
                 //TODO: Создать способ копирования папок
             }
             Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             _isPanelOpened = false;
         }
         public void F6KeyPressedHandler() {
@@ -234,24 +233,30 @@ namespace TerminalEmulator {
             string dirName = Console.ReadLine();
             Directory.CreateDirectory(dirName);
             Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             _isPanelOpened = false;
         }
         public void F7KeyPressedHandler() {
             if(_selectedItem is FileInfo) {
-                (_selectedItem as FileInfo).Delete();
-                Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                DeleteFile();
             }
-            if(_selectedItem is DirectoryInfo) {
-                Console.Write("Warning! All files inside directory will be also deleted!");
-                (_selectedItem as DirectoryInfo).Delete(true);
-                System.Threading.Thread.Sleep(3000);
-                Console.SetCursorPosition(2, _mainWindowHeight + 1);
-                Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
-                Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref directoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+            else if(_selectedItem is DirectoryInfo) {
+                DeleteDirectory();
             }
+        }
+        private void DeleteFile() {
+            (_selectedItem as FileInfo).Delete();
+            Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+        }
+        private void DeleteDirectory() {
+            Console.Write("Warning! All files inside directory will be also deleted!");
+            (_selectedItem as DirectoryInfo).Delete(true);
+            System.Threading.Thread.Sleep(3000);
+            Console.SetCursorPosition(2, _mainWindowHeight + 1);
+            Console.Write(" ".MultiplySpace(_mainWindowWidth - 1));
+            Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
+            Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
         }
         public void F9KeyPressedHandler() {
             Console.ForegroundColor = ConsoleColor.White;
