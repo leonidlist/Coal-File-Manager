@@ -16,37 +16,6 @@ namespace TerminalEmulator {
             _currentDirectory = new DirectoryInfo(DriveInfo.GetDrives()[0].RootDirectory.FullName);
         }
 
-        public void Start() {
-            while (true) {
-                Console.Write($"{_currentDirectory}> ");
-                string command = Console.ReadLine();
-                string[] pars = command.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                List<string> give = pars.ToList();
-                give.RemoveAt(0);
-                if (pars[0] == "help") {
-                    HelpCommand(give);
-                }
-                else if (pars[0] == "clear") {
-                    ClearCommand(give);
-                }
-                else if (pars[0] == "ls") {
-                    LsCommand(give);
-                }
-                else if (pars[0] == "cd") {
-                    CdCommand(give);
-                }
-                else if (pars[0] == "cp") {
-                    CpCommand(give);
-                }
-                else if (pars[0] == "rm") {
-                    RmCommand(give);
-                }
-                else if (pars[0] == "mkdir") {
-                    MkDirCommand(give);
-                }
-            }
-        }
-
         private void HelpCommand(List<string> args) {
             Console.WriteLine(@"clear - очистить экран
 ls - список файлов и директорий
