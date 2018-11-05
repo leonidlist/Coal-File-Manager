@@ -65,7 +65,7 @@
     <Compile Include="Drawers.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="MyConsole.cs" />
+    <Compile Include="KeyHandlers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

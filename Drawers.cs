@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace TerminalEmulator {
     static class Drawers {
-        public static void DrawDirectoriesAndFiles(MyConsole console, ref ArrayList directoryContains, ref object selectedItem, int selected, int height, int offset = 0, int stopper = hei) {
+        public static void DrawDirectoriesAndFiles(DirectoryInfo currentDirectory, ref ArrayList directoryContains, ref object selectedItem, int selected, int height, int offset = 0, int stopper = 0) {
             directoryContains = new ArrayList();
-            directoryContains.AddRange(console.GetCurrentDirectory.GetDirectories());
-            directoryContains.AddRange(console.GetCurrentDirectory.GetFiles());
+            directoryContains.AddRange(currentDirectory.GetDirectories());
+            directoryContains.AddRange(currentDirectory.GetFiles());
             for (int i = 0 + offset; i < height - 2 + offset && i < directoryContains.Count; i++) {
                 Console.BackgroundColor = ConsoleColor.DarkBlue;
                 Console.ForegroundColor = ConsoleColor.Yellow;
