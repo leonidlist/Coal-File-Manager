@@ -39,20 +39,26 @@ namespace TerminalEmulator {
         public void StartSearch() {
             DirectoryInfo dir = new DirectoryInfo(DriveInfo.GetDrives()[0].RootDirectory.FullName);
             _searchResult = new ArrayList();
-            Search("data.txt",dir);
+            SearchByExpression(@"\w.txt",dir);
             foreach(FileInfo file in _searchResult) {
                 Console.WriteLine(file.FullName);
             }
         }
-        private void Search(string name, DirectoryInfo curr) {
-            foreach (DirectoryInfo directory in curr.GetDirectories()) {
-                try {
-                    foreach(FileInfo file in directory.GetFiles(name)) {
-                        _searchResult.Add(file);
+        private void SearchByExpression(string expression, DirectoryInfo curr) {
+            ArrayList contains = new ArrayList();
+            contains.AddRange(curr.GetDirectories());
+            contains.AddRange(curr.GetFiles());
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    if (Regex.IsMatch((i as DirectoryInfo).Name, expression)) {
+                        _searchResult.Add(i as Directory);
                     }
-                    Search(name, directory);
+                    SearchByExpression(expression, i as DirectoryInfo);
                 }
-                catch (Exception) {
+                else {
+                    if (Regex.IsMatch((i as FileInfo).Name, expression)) {
+                        _searchResult.Add(i as FileInfo);
+                    }
                 }
             }
         }
