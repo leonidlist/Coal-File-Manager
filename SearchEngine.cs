@@ -20,57 +20,64 @@ namespace TerminalEmulator {
             _searchResult.Clear();
         }
         public static void SearchByExpression(string expression, DirectoryInfo curr) {
-            ArrayList contains = new ArrayList();
-            contains.AddRange(curr.GetDirectories());
-            contains.AddRange(curr.GetFiles());
-            foreach (var i in contains) {
-                if (i is DirectoryInfo) {
-                    if (Regex.IsMatch((i as DirectoryInfo).Name, expression)) {
-                        _searchResult.Add(i as Directory);
+            try {
+                ArrayList contains = new ArrayList();
+                contains.AddRange(curr.GetDirectories());
+                contains.AddRange(curr.GetFiles());
+                foreach (var i in contains) {
+                    if (i is DirectoryInfo) {
+                        if (Regex.IsMatch((i as DirectoryInfo).Name, expression)) {
+                            _searchResult.Add(i as Directory);
+                        }
+                        SearchByExpression(expression, i as DirectoryInfo);
                     }
-                    SearchByExpression(expression, i as DirectoryInfo);
-                }
-                else {
-                    if (Regex.IsMatch((i as FileInfo).Name, expression)) {
-                        _searchResult.Add(i as FileInfo);
+                    else {
+                        if (Regex.IsMatch((i as FileInfo).Name, expression)) {
+                            _searchResult.Add(i as FileInfo);
+                        }
                     }
                 }
             }
+            catch (Exception) { }
         }
 
         public static void SearchBySize(int size, DirectoryInfo curr) {
-            ArrayList contains = new ArrayList();
-            contains.AddRange(curr.GetDirectories());
-            contains.AddRange(curr.GetFiles());
-            foreach (var i in contains) {
-                if (i is DirectoryInfo) {
-                    SearchBySize(size, i as DirectoryInfo);
-                }
-                else {
-                    if ((i as FileInfo).Length == size) {
-                        _searchResult.Add(i as FileInfo);
+            try {
+                ArrayList contains = new ArrayList();
+                contains.AddRange(curr.GetDirectories());
+                contains.AddRange(curr.GetFiles());
+                foreach (var i in contains) {
+                    if (i is DirectoryInfo) {
+                        SearchBySize(size, i as DirectoryInfo);
+                    }
+                    else {
+                        if ((i as FileInfo).Length == size) {
+                            _searchResult.Add(i as FileInfo);
+                        }
                     }
                 }
-            }
+            } catch(Exception) { }
         }
 
         public static void SearchByCreationTime(DateTime time, DirectoryInfo curr) {
-            ArrayList contains = new ArrayList();
-            contains.AddRange(curr.GetDirectories());
-            contains.AddRange(curr.GetFiles());
-            foreach (var i in contains) {
-                if (i is DirectoryInfo) {
-                    if ((i as DirectoryInfo).CreationTime == time) {
-                        _searchResult.Add(i as DirectoryInfo);
+            try {
+                ArrayList contains = new ArrayList();
+                contains.AddRange(curr.GetDirectories());
+                contains.AddRange(curr.GetFiles());
+                foreach (var i in contains) {
+                    if (i is DirectoryInfo) {
+                        if ((i as DirectoryInfo).CreationTime == time) {
+                            _searchResult.Add(i as DirectoryInfo);
+                        }
+                        SearchByCreationTime(time, i as DirectoryInfo);
                     }
-                    SearchByCreationTime(time, i as DirectoryInfo);
-                }
-                else {
-                    if ((i as FileInfo).CreationTime == time) {
-                        _searchResult.Add(i as FileInfo);
+                    else {
+                        if ((i as FileInfo).CreationTime == time) {
+                            _searchResult.Add(i as FileInfo);
+                        }
                     }
                 }
-            }
+            } catch (Exception) { }
         }
     }
 }

@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace TerminalEmulator {
     static class Drawers {
-        public static void DrawDirectoriesAndFiles(DirectoryInfo currentDirectory, ref ArrayList directoryContains, ref object selectedItem, int selected, int height, int offset = 0, int stopper = 0) {
-            directoryContains = new ArrayList();
-            directoryContains.AddRange(currentDirectory.GetDirectories());
-            directoryContains.AddRange(currentDirectory.GetFiles());
+        public static void DrawDirectoriesAndFiles(ref ArrayList directoryContains, ref object selectedItem, int selected, int height, int offset = 0, int stopper = 0) {
             for (int i = 0 + offset; i < height - 2 + offset && i < directoryContains.Count; i++) {
                 Console.BackgroundColor = ConsoleColor.DarkBlue;
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -138,31 +135,43 @@ namespace TerminalEmulator {
             Console.ResetColor();
         }
 
-        public static void DrawSearchMenu(int height, int width) {
+        public static string[] DrawSearchMenu(int height, int width) {
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.Black;
             //Draw gray background
-            for(int i = 0; i < 10; i++) {
-                Console.SetCursorPosition(width/2-(width/4), (height/2-5)+i);
+            for(int i = 0; i < 12; i++) {
+                Console.SetCursorPosition(width/2-(width/4), (height/2-6)+i);
                 Console.Write(" ".MultiplySpace(width/2));
             }
             //Draw border inside menu
-            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 1);
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 1);
             Console.Write(GetTopBorder(width / 2 - 4));
-            for(int i = 0; i < 6; i++) {
-                Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 2 + i);
+            for(int i = 0; i < 8; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 2 + i);
                 Console.Write(GetMiddleBorder(width / 2 - 4));
             }
-            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 8);
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 10);
             Console.Write(GetBottomBorder(width / 2 - 4));
             //Draw
-            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 3);
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 2);
             Console.Write("Input your search query (regex supported): ");
-            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 5);
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 4);
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write(" ".MultiplySpace(width/2-10));
-            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 5);
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 6);
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("Input where to search: ");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 8);
+            Console.Write(" ".MultiplySpace(width / 2 - 10));
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 4);
+            string expression = Console.ReadLine();
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 8);
+            string whereTo = Console.ReadLine();
+            return new string[] { expression, whereTo };
         }
 
         public static void DrawAdditionalPanel(int height, int width) {

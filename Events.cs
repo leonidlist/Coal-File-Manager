@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace TerminalEmulator {
     class Events {
+        private static event Action DirectoryChanged;
         private event Action ArrowDownKeyPressed;
         private event Action ArrowUpKeyPressed;
         private event Action EscapeKeyPressed;
@@ -17,18 +18,37 @@ namespace TerminalEmulator {
         private event Action F7KeyPressed;
         private event Action F9KeyPressed;
         private event Action F10KeyPressed;
-        public Events(ConsoleCore app) {
-            ArrowUpKeyPressed += app.ArrowUpKeyPressedHandler;
-            ArrowDownKeyPressed += app.ArrowDownKeyPressedHandler;
-            EnterKeyPressed += app.EnterKeyPressedHandler;
-            EscapeKeyPressed += app.EscapeKeyPressedHandler;
-            F2KeyPressed += app.F2KeyPressedHandler;
-            F3KeyPressed += app.F3KeyPressHandler;
-            F5KeyPressed += app.F5KeyPressedHandler;
-            F6KeyPressed += app.F6KeyPressedHandler;
-            F7KeyPressed += app.F7KeyPressedHandler;
-            F9KeyPressed += app.F9KeyPressedHandler;
-            F10KeyPressed += app.F10KeyPressedHandler;
+        public static void CallDirectoryChanged() {
+            DirectoryChanged?.Invoke();
+        }
+        public Events(ConsoleCore core) {
+            F10KeyPressed += core.F10KeyPressedHandler;
+        }
+        public void Subscribe(Window window) {
+            ArrowDownKeyPressed += window.ArrowDownKeyPressedHandler;
+            ArrowUpKeyPressed += window.ArrowUpKeyPressedHandler;
+            EscapeKeyPressed += window.EscapeKeyPressedHandler;
+            EnterKeyPressed += window.EnterKeyPressedHandler;
+            F2KeyPressed += window.F2KeyPressedHandler;
+            F3KeyPressed += window.F3KeyPressedHandler;
+            F5KeyPressed += window.F5KeyPressedHandler;
+            F6KeyPressed += window.F6KeyPressedHandler;
+            F7KeyPressed += window.F7KeyPressedHandler;
+            F9KeyPressed += window.F9KeyPressedHandler;
+            DirectoryChanged += window.DirectoryChangedEventHandler;
+        }
+        public void Unsubscribe(Window window) {
+            ArrowDownKeyPressed -= window.ArrowDownKeyPressedHandler;
+            ArrowUpKeyPressed -= window.ArrowUpKeyPressedHandler;
+            EscapeKeyPressed -= window.EscapeKeyPressedHandler;
+            EnterKeyPressed -= window.EnterKeyPressedHandler;
+            F2KeyPressed -= window.F2KeyPressedHandler;
+            F3KeyPressed -= window.F3KeyPressedHandler;
+            F5KeyPressed -= window.F5KeyPressedHandler;
+            F6KeyPressed -= window.F6KeyPressedHandler;
+            F7KeyPressed -= window.F7KeyPressedHandler;
+            F9KeyPressed -= window.F9KeyPressedHandler;
+            DirectoryChanged -= window.DirectoryChangedEventHandler;
         }
         public void Selecter(int height) {
             while (true) {
