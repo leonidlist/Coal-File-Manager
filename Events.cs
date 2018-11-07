@@ -16,6 +16,7 @@ namespace TerminalEmulator {
         private event Action F6KeyPressed;
         private event Action F7KeyPressed;
         private event Action F9KeyPressed;
+        private event Action F10KeyPressed;
         public Events(ConsoleCore app) {
             ArrowUpKeyPressed += app.ArrowUpKeyPressedHandler;
             ArrowDownKeyPressed += app.ArrowDownKeyPressedHandler;
@@ -27,6 +28,7 @@ namespace TerminalEmulator {
             F6KeyPressed += app.F6KeyPressedHandler;
             F7KeyPressed += app.F7KeyPressedHandler;
             F9KeyPressed += app.F9KeyPressedHandler;
+            F10KeyPressed += app.F10KeyPressedHandler;
         }
         public void Selecter(int height) {
             while (true) {
@@ -37,32 +39,35 @@ namespace TerminalEmulator {
                 if (keyInfo.Key == ConsoleKey.DownArrow) {
                     ArrowDownKeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.UpArrow) {
+                else if (keyInfo.Key == ConsoleKey.UpArrow) {
                     ArrowUpKeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.Enter) {
+                else if (keyInfo.Key == ConsoleKey.Enter) {
                     EnterKeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.Escape) {
+                else if (keyInfo.Key == ConsoleKey.Escape) {
                     EscapeKeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F2) {
+                else if (keyInfo.Key == ConsoleKey.F2) {
                     F2KeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F3) {
+                else if (keyInfo.Key == ConsoleKey.F3) {
                     F3KeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F5) {
+                else if (keyInfo.Key == ConsoleKey.F5) {
                     F5KeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F6) {
+                else if (keyInfo.Key == ConsoleKey.F6) {
                     F6KeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F7) {
+                else if(keyInfo.Key == ConsoleKey.F7) {
                     F7KeyPressed?.Invoke();
                 }
-                if (keyInfo.Key == ConsoleKey.F9) {
+                else if(keyInfo.Key == ConsoleKey.F9) {
                     F9KeyPressed?.Invoke();
+                }
+                else if (keyInfo.Key == ConsoleKey.F10) {
+                    F10KeyPressed?.Invoke();
                 }
             }
         }

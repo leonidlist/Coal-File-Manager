@@ -296,6 +296,22 @@ namespace TerminalEmulator {
             Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
         }
         public void F9KeyPressedHandler() {
+            Drawers.DrawSearchMenu(_mainWindowHeight, _mainWindowWidth);
+            string expression = Console.ReadLine();
+            //SearchEngine.SearchByExpression(expression, DriveInfo.GetDrives()[0].RootDirectory);
+            DirectoryInfo d = new DirectoryInfo(@"C:/C#");
+            SearchEngine.SearchByExpression(expression, d);
+            Console.SetCursorPosition(0, 0);
+            foreach (var i in SearchEngine.GetSearchResult()) {
+                if (i is FileInfo) {
+                    Console.WriteLine((i as FileInfo).Name);
+                }
+                else {
+                    Console.WriteLine((i as DirectoryInfo).Name);
+                }
+            }
+        }
+        public void F10KeyPressedHandler() {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();

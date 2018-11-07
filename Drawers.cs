@@ -132,8 +132,37 @@ namespace TerminalEmulator {
             Console.SetCursorPosition(79, height + 3);
             Console.Write("F8 MkFile");
             Console.SetCursorPosition(91, height + 3);
-            Console.Write("F9 Quit");
+            Console.Write("F9 Search");
+            Console.SetCursorPosition(103, height + 3);
+            Console.Write("F10 Quit");
             Console.ResetColor();
+        }
+
+        public static void DrawSearchMenu(int height, int width) {
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Black;
+            //Draw gray background
+            for(int i = 0; i < 10; i++) {
+                Console.SetCursorPosition(width/2-(width/4), (height/2-5)+i);
+                Console.Write(" ".MultiplySpace(width/2));
+            }
+            //Draw border inside menu
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 1);
+            Console.Write(GetTopBorder(width / 2 - 4));
+            for(int i = 0; i < 6; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 2 + i);
+                Console.Write(GetMiddleBorder(width / 2 - 4));
+            }
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 5) + 8);
+            Console.Write(GetBottomBorder(width / 2 - 4));
+            //Draw
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 3);
+            Console.Write("Input your search query (regex supported): ");
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 5);
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(" ".MultiplySpace(width/2-10));
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 5) + 5);
         }
 
         public static void DrawAdditionalPanel(int height, int width) {
