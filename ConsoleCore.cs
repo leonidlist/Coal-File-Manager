@@ -11,6 +11,7 @@ namespace TerminalEmulator {
     sealed class ConsoleCore {
         private DirectoryInfo _currentDirectory;
         private ArrayList _currentDirectoryContains;
+        private ArrayList _searchResult;
         private object _selectedItem;
         private Events _events;
         private int _maxBufferHeight;
@@ -34,6 +35,26 @@ namespace TerminalEmulator {
             Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
             Drawers.DrawMenu(_mainWindowHeight);
             _events.Selecter(_mainWindowHeight);
+        }
+        public void StartSearch() {
+            DirectoryInfo dir = new DirectoryInfo(DriveInfo.GetDrives()[0].RootDirectory.FullName);
+            _searchResult = new ArrayList();
+            Search("data.txt",dir);
+            foreach(FileInfo file in _searchResult) {
+                Console.WriteLine(file.FullName);
+            }
+        }
+        private void Search(string name, DirectoryInfo curr) {
+            foreach (DirectoryInfo directory in curr.GetDirectories()) {
+                try {
+                    foreach(FileInfo file in directory.GetFiles(name)) {
+                        _searchResult.Add(file);
+                    }
+                    Search(name, directory);
+                }
+                catch (Exception) {
+                }
+            }
         }
         private void CalculateMaxClearPoint() {
             int max = 0;
@@ -94,13 +115,23 @@ namespace TerminalEmulator {
         }
         public void EnterKeyPressedHandler() {
             if(_selectedItem is DirectoryInfo) {
-                _selected = 0;
-                _scrollOffset = 0;
-                _isPanelOpened = false;
-                _currentDirectory = _selectedItem as DirectoryInfo;
-                Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
-                Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
-                Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                try {
+                    _selected = 0;
+                    _scrollOffset = 0;
+                    _isPanelOpened = false;
+                    _currentDirectory = _selectedItem as DirectoryInfo;
+                    Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
+                    Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
+                    Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                } catch(Exception) {
+                    Console.SetCursorPosition(1, 1);
+                    Console.Write("You have not permissions to access this folder...");
+                    System.Threading.Thread.Sleep(3000);
+                    _currentDirectory = _currentDirectory.Parent;
+                    Drawers.DrawCurrentDirectory(_mainWindowWidth, _currentDirectory.FullName);
+                    Drawers.ClearMainWindow(_mainWindowHeight, _mainWindowWidth);
+                    Drawers.DrawDirectoriesAndFiles(_currentDirectory, ref _currentDirectoryContains, ref _selectedItem, _selected, _mainWindowHeight, _scrollOffset);
+                }
             }
             else if((_selectedItem as FileInfo).Extension == ".txt") {
                 OpenTxtFile();

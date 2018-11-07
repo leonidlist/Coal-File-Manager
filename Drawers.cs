@@ -46,66 +46,49 @@ namespace TerminalEmulator {
             }
         }
         public static void DrawBorder(int height, int width) {
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.Yellow;
             for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    Console.SetCursorPosition(j, i);
-                    if (i == 0) {
-                        if (j == 0) {
-                            Console.WriteLine("╔");
-                        }
-                        else if (j == width - 1) {
-                            Console.WriteLine("╗");
-                        }
-                        else {
-                            Console.WriteLine("═");
-                        }
-                    }
-                    else if (i == height - 1) {
-                        if (j == 0) {
-                            Console.WriteLine("╚");
-                        }
-                        else if (j == width - 1) {
-                            Console.WriteLine("╝");
-                        }
-                        else {
-                            Console.WriteLine("═");
-                        }
-                    }
-                    else {
-                        if (j == 0 || j == width - 1) {
-                            Console.WriteLine("║");
-                        }
-                        else {
-                            Console.WriteLine(" ");
-                        }
-                    }
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.SetCursorPosition(0,i);
+                if (i == 0) {
+                    Console.Write(GetTopBorder(width));
+                }
+                else if (i == height - 1) {
+                    Console.Write(GetBottomBorder(width));
+                }
+                else {
+                    Console.Write(GetMiddleBorder(width));
                 }
             }
             Console.ResetColor();
         }
 
-        public static void DrawTopBorder(int width) {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            for (int i = 0; i < width; i++) {
-                Console.SetCursorPosition(i, 0);
-                if (i == 0) {
-                    Console.WriteLine("╔");
-                }
-                else if (i == width - 1) {
-                    Console.WriteLine("╗");
-                }
-                else {
-                    Console.WriteLine("═");
-                }
-            }
-            Console.ResetColor();
+        public static string GetTopBorder(int width) {
+            StringBuilder sb = new StringBuilder("╔");
+            sb.Append('═', width - 2);
+            sb.Append('╗');
+            return sb.ToString();
+        }
+
+        public static string GetMiddleBorder(int width) {
+            StringBuilder sb = new StringBuilder("║");
+            sb.Append(' ', width - 2);
+            sb.Append('║');
+            return sb.ToString();
+        }
+
+        public static string GetBottomBorder(int width) {
+            StringBuilder sb = new StringBuilder("╚");
+            sb.Append('═', width - 2);
+            sb.Append('╝');
+            return sb.ToString();
         }
 
         public static void DrawCurrentDirectory(int width, string directoryName) {
-            DrawTopBorder(width);
+            Console.SetCursorPosition(0, 0);
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(GetTopBorder(width));
             Console.SetCursorPosition(5, 0);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
