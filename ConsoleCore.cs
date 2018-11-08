@@ -25,10 +25,10 @@ namespace TerminalEmulator {
             _events = new Events(this);
         }
         public void Start() {
-            CurrentTab = _tab2;
+            CurrentTab = _tab1;
             _tab1.Draw();
             _tab2.Draw();
-            _events.Subscribe(_tab2);
+            _events.Subscribe(_tab1);
             _events.Selecter(_tab1.TabHeight);
         }
         public void TabHandler() {

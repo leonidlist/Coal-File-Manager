@@ -39,16 +39,14 @@ namespace TerminalEmulator {
             _selectedIndex = _scrollOffset = 0;
             TabHeight = Console.BufferHeight - 5;
             TabWidth = Console.BufferWidth/2;
+            CalculateMax();
         }
 
-        public void DirectoryChangedEventHandler() {
+        public void CalculateMax() {
             int max = 0;
-            _currentTabContains.Clear();
-            _currentTabContains.AddRange(_currentDirectory.GetDirectories());
-            _currentTabContains.AddRange(_currentDirectory.GetFiles());
-            for(int i = 0; i < _currentTabContains.Count; i++) {
-                if(_currentTabContains[i] is FileInfo) {
-                    if((_currentTabContains[i] as FileInfo).Name.Length > max) {
+            for (int i = 0; i < _currentTabContains.Count; i++) {
+                if (_currentTabContains[i] is FileInfo) {
+                    if ((_currentTabContains[i] as FileInfo).Name.Length > max) {
                         max = (_currentTabContains[i] as FileInfo).Name.Length;
                     }
                 }
@@ -59,6 +57,13 @@ namespace TerminalEmulator {
                 }
             }
             _scrollMaxClearValue = max;
+        }
+
+        public void DirectoryChangedEventHandler() {
+            int max = 0;
+            _currentTabContains.Clear();
+            _currentTabContains.AddRange(_currentDirectory.GetDirectories());
+            _currentTabContains.AddRange(_currentDirectory.GetFiles());
         }
 
         public void Draw() {
@@ -76,8 +81,9 @@ namespace TerminalEmulator {
                 _currentDirectory = _currentDirectory.Parent;
                 Events.CallDirectoryChanged();
                 Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName);
-                Drawers.ClearTab(TabHeight, TabWidth, _isSecond);
+                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                CalculateMax();
             }
         }
 
@@ -88,7 +94,7 @@ namespace TerminalEmulator {
             }
             else if (_selectedIndex > TabHeight - 3 + _scrollOffset && _selectedIndex < _currentTabContains.Count) {
                 _scrollOffset++;
-                Drawers.ClearTab(TabHeight, TabWidth, _isSecond);
+                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 return;
             }
@@ -103,7 +109,7 @@ namespace TerminalEmulator {
             }
             if (_selectedIndex < _scrollOffset) {
                 _scrollOffset--;
-                Drawers.ClearTab(TabHeight, TabWidth, _isSecond);
+                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue,_isSecond);
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 return;
             }
@@ -122,7 +128,7 @@ namespace TerminalEmulator {
                 _isPanelOpened = true;
             }
             else {
-                Drawers.ClearTab(TabHeight, TabWidth);
+                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 _isPanelOpened = false;
             }
@@ -155,7 +161,7 @@ namespace TerminalEmulator {
         }
         private void DeleteFile() {
             (_selectedItem as FileInfo).Delete();
-            Drawers.ClearTab(TabHeight, TabWidth);
+            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
@@ -165,7 +171,7 @@ namespace TerminalEmulator {
             System.Threading.Thread.Sleep(3000);
             Console.SetCursorPosition(2, TabHeight + 1);
             Console.Write(" ".MultiplySpace(TabWidth - 1));
-            Drawers.ClearTab(TabHeight, TabWidth);
+            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
@@ -193,8 +199,9 @@ namespace TerminalEmulator {
                     _currentDirectory = _selectedItem as DirectoryInfo;
                     Events.CallDirectoryChanged();
                     Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                    Drawers.ClearTab(TabHeight, TabWidth, _isSecond);
+                    Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                     Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                    CalculateMax();
                 }
                 catch (Exception) {
                     Console.SetCursorPosition(1, 1);
@@ -208,7 +215,7 @@ namespace TerminalEmulator {
                     }
                     Events.CallDirectoryChanged();
                     Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                    Drawers.ClearTab(TabHeight, TabWidth, _isSecond);
+                    Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                     Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 }
             }
@@ -240,7 +247,7 @@ namespace TerminalEmulator {
                     Console.Write(e.Message);
                 }
             }
-            Drawers.ClearTab(TabHeight, TabWidth);
+            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
             _isPanelOpened = false;
@@ -263,7 +270,7 @@ namespace TerminalEmulator {
             else if (_selectedItem is DirectoryInfo) {
                 //TODO: Создать способ копирования папок
             }
-            Drawers.ClearTab(TabHeight, TabWidth);
+            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
             _isPanelOpened = false;
         }
@@ -274,7 +281,7 @@ namespace TerminalEmulator {
             Console.Write("Input new directory path > ");
             string dirName = Console.ReadLine();
             Directory.CreateDirectory(dirName);
-            Drawers.ClearTab(TabHeight, TabWidth);
+            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
             _isPanelOpened = false;

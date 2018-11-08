@@ -64,11 +64,11 @@ namespace TerminalEmulator {
             Console.ResetColor();
         }
 
-        public static void ClearTab(int height, int width, bool isSecondTab = false) {
+        public static void ClearTab(int height, int width, int maxClear, bool isSecondTab = false) {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             for (int i = 1; i < height - 1; i++) {
                 Console.SetCursorPosition(isSecondTab ? 1 + width : 1, i);
-                Console.Write(" ".MultiplySpace(width-2));
+                Console.Write(" ".MultiplySpace(maxClear));
             }
         }
 
