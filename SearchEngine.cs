@@ -27,7 +27,7 @@ namespace TerminalEmulator {
                 foreach (var i in contains) {
                     if (i is DirectoryInfo) {
                         if (Regex.IsMatch((i as DirectoryInfo).Name, expression)) {
-                            _searchResult.Add(i as Directory);
+                            _searchResult.Add(i as DirectoryInfo);
                         }
                         SearchByExpression(expression, i as DirectoryInfo);
                     }

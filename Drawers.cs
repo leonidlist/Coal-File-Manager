@@ -7,105 +7,68 @@ using System.Threading.Tasks;
 
 namespace TerminalEmulator {
     static class Drawers {
-        public static void DrawDirectoriesAndFiles(ref ArrayList directoryContains, ref object selectedItem, int selected, int height, int offset = 0, int stopper = 0) {
-            for (int i = 0 + offset; i < height - 2 + offset && i < directoryContains.Count; i++) {
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.SetCursorPosition(2, i + 1 - offset);
-                if (directoryContains[i] is DirectoryInfo) {
-                    if (i == selected) {
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-                        selectedItem = directoryContains[i];
-                    }
-                    if(stopper != 0 && (directoryContains[i] as DirectoryInfo).Name.Length > stopper-1) {
-                        Console.Write((directoryContains[i] as DirectoryInfo).Name.Remove(0,stopper-1) + "/");
-                    }
-                    else {
-                        Console.Write((directoryContains[i] as DirectoryInfo).Name + "/");
-                    }
-                    Console.ResetColor();
-                }
-                else if (directoryContains[i] is FileInfo) {
-                    if (i == selected) {
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-                        selectedItem = directoryContains[i];
-                    }
-                    if (stopper != 0 && (directoryContains[i] as FileInfo).Name.Length > stopper - 1) {
-                        Console.Write((directoryContains[i] as FileInfo).Name.Remove(0, stopper - 1));
-                    }
-                    else {
-                        Console.Write((directoryContains[i] as FileInfo).Name);
-                    }
-                    Console.ResetColor();
-                }
-            }
-        }
-        public static void DrawBorder(int height, int width) {
+        public static void DrawBorder(int height, int width, bool isSecondTab = false) {
             for (int i = 0; i < height; i++) {
                 Console.BackgroundColor = ConsoleColor.DarkBlue;
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.SetCursorPosition(0,i);
+                Console.SetCursorPosition(isSecondTab ? width : 0, i);
                 if (i == 0) {
-                    Console.Write(GetTopBorder(width));
+                    Console.Write(Helpers.GetTopBorder(width));
                 }
                 else if (i == height - 1) {
-                    Console.Write(GetBottomBorder(width));
+                    Console.Write(Helpers.GetBottomBorder(width));
                 }
                 else {
-                    Console.Write(GetMiddleBorder(width));
+                    Console.Write(Helpers.GetMiddleBorder(width));
                 }
             }
             Console.ResetColor();
         }
-
-        public static string GetTopBorder(int width) {
-            StringBuilder sb = new StringBuilder("╔");
-            sb.Append('═', width - 2);
-            sb.Append('╗');
-            return sb.ToString();
+        public static void DrawDirectoriesAndFiles(ArrayList directoryContains, ref object selectedItem, int selected, int height, int width, int offset = 0, bool isSecondTab = false) {
+            for (int i = 0 + offset; i < height - 2 + offset && i < directoryContains.Count; i++) {
+                Console.SetCursorPosition(isSecondTab?width+2:2, i + 1 - offset);
+                if (directoryContains[i] is DirectoryInfo) {
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    if (i == selected) {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        selectedItem = directoryContains[i];
+                    }
+                    Console.Write((directoryContains[i] as DirectoryInfo).Name + "/");
+                    Console.ResetColor();
+                }
+                else if (directoryContains[i] is FileInfo) {
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    if (i == selected) {
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        selectedItem = directoryContains[i];
+                    }
+                    Console.Write((directoryContains[i] as FileInfo).Name);
+                    Console.ResetColor();
+                }
+            }
         }
 
-        public static string GetMiddleBorder(int width) {
-            StringBuilder sb = new StringBuilder("║");
-            sb.Append(' ', width - 2);
-            sb.Append('║');
-            return sb.ToString();
-        }
-
-        public static string GetBottomBorder(int width) {
-            StringBuilder sb = new StringBuilder("╚");
-            sb.Append('═', width - 2);
-            sb.Append('╝');
-            return sb.ToString();
-        }
-
-        public static void DrawCurrentDirectory(int width, string directoryName) {
-            Console.SetCursorPosition(0, 0);
+        public static void DrawCurrentDirectory(int width, string directoryName, bool isSecondTab = false) {
+            Console.SetCursorPosition(isSecondTab ? width : 0, 0);
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(GetTopBorder(width));
-            Console.SetCursorPosition(5, 0);
+            Console.Write(Helpers.GetTopBorder(width));
+            Console.SetCursorPosition(isSecondTab?width+5:5, 0);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write(directoryName);
             Console.ResetColor();
         }
 
-        public static void ClearMainWindow(int height, int width, int stopper = 0) {
+        public static void ClearTab(int height, int width, bool isSecondTab = false) {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
-            if(stopper == 0) {
-                for (int i = 1; i < height - 1; i++) {
-                    Console.SetCursorPosition(1, i);
-                    Console.Write(" ".MultiplySpace((width - stopper) - 3));
-                }
-            }
-            else {
-                for (int i = 1; i < height - 1; i++) {
-                    Console.SetCursorPosition(1, i);
-                    Console.Write(" ".MultiplySpace(stopper + 1));
-                }
+            for (int i = 1; i < height - 1; i++) {
+                Console.SetCursorPosition(isSecondTab ? 1 + width : 1, i);
+                Console.Write(" ".MultiplySpace(width-2));
             }
         }
 
@@ -145,13 +108,13 @@ namespace TerminalEmulator {
             }
             //Draw border inside menu
             Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 1);
-            Console.Write(GetTopBorder(width / 2 - 4));
+            Console.Write(Helpers.GetTopBorder(width / 2 - 4));
             for(int i = 0; i < 8; i++) {
                 Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 2 + i);
-                Console.Write(GetMiddleBorder(width / 2 - 4));
+                Console.Write(Helpers.GetMiddleBorder(width / 2 - 4));
             }
             Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 10);
-            Console.Write(GetBottomBorder(width / 2 - 4));
+            Console.Write(Helpers.GetBottomBorder(width / 2 - 4));
             //Draw
             Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 2);
             Console.Write("Input your search query (regex supported): ");

@@ -13,18 +13,35 @@ namespace TerminalEmulator {
         public Events Events {
             get => _events;
         }
-        private Window _currentWindow;
+        private Tab _tab1;
+        private Tab _tab2;
+        public Tab CurrentTab { get; set; }
         private int _maxBufferHeight;
         private int _maxBufferWidth;
         public ConsoleCore() {
             SetConsoleSettings();
-            _currentWindow = new Window(this, DriveInfo.GetDrives()[0].RootDirectory);
+            _tab1 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory);
+            _tab2 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory, true);
             _events = new Events(this);
         }
         public void Start() {
-            _currentWindow.Draw();
-            _events.Subscribe(_currentWindow);
-            _events.Selecter(_currentWindow.Height);
+            CurrentTab = _tab2;
+            _tab1.Draw();
+            _tab2.Draw();
+            _events.Subscribe(_tab2);
+            _events.Selecter(_tab1.TabHeight);
+        }
+        public void TabHandler() {
+            if(CurrentTab == _tab1) {
+                _events.Unsubscribe(_tab1);
+                CurrentTab = _tab2;
+                _events.Subscribe(_tab2);
+            }
+            else {
+                _events.Unsubscribe(_tab2);
+                CurrentTab = _tab1;
+                _events.Subscribe(_tab1);
+            }
         }
         private void SetConsoleSettings() {
             Console.BackgroundColor = ConsoleColor.DarkBlue;

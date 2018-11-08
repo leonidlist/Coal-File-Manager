@@ -18,13 +18,15 @@ namespace TerminalEmulator {
         private event Action F7KeyPressed;
         private event Action F9KeyPressed;
         private event Action F10KeyPressed;
+        private event Action TabKeyPressed;
         public static void CallDirectoryChanged() {
             DirectoryChanged?.Invoke();
         }
         public Events(ConsoleCore core) {
+            TabKeyPressed += core.TabHandler;
             F10KeyPressed += core.F10KeyPressedHandler;
         }
-        public void Subscribe(Window window) {
+        public void Subscribe(Tab window) {
             ArrowDownKeyPressed += window.ArrowDownKeyPressedHandler;
             ArrowUpKeyPressed += window.ArrowUpKeyPressedHandler;
             EscapeKeyPressed += window.EscapeKeyPressedHandler;
@@ -37,7 +39,7 @@ namespace TerminalEmulator {
             F9KeyPressed += window.F9KeyPressedHandler;
             DirectoryChanged += window.DirectoryChangedEventHandler;
         }
-        public void Unsubscribe(Window window) {
+        public void Unsubscribe(Tab window) {
             ArrowDownKeyPressed -= window.ArrowDownKeyPressedHandler;
             ArrowUpKeyPressed -= window.ArrowUpKeyPressedHandler;
             EscapeKeyPressed -= window.EscapeKeyPressedHandler;
@@ -88,6 +90,9 @@ namespace TerminalEmulator {
                 }
                 else if (keyInfo.Key == ConsoleKey.F10) {
                     F10KeyPressed?.Invoke();
+                }
+                else if(keyInfo.Key == ConsoleKey.Tab) {
+                    TabKeyPressed?.Invoke();
                 }
             }
         }
