@@ -1,5 +1,5 @@
 ## **Coal File Manager** 
-[![Build Status](https://travis-ci.com/leonidlist/Terminal-Emulator.svg?branch=master)](https://travis-ci.com/leonidlist/Terminal-Emulator)
+[![Build Status](https://travis-ci.com/leonidlist/Coal-File-Manager.svg?branch=master)](https://travis-ci.com/leonidlist/Coal-File-Manager)
 
 **Author**: [Leonid List](https://t.me/leonidlist)
 ##
