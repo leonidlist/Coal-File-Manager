@@ -35,7 +35,11 @@ namespace TerminalEmulator {
                         Console.BackgroundColor = ConsoleColor.Red;
                         selectedItem = directoryContains[i];
                     }
-                    Console.Write((directoryContains[i] as DirectoryInfo).Name + "/");
+                    if((directoryContains[i] as DirectoryInfo).Name.Length > (width-2))
+                        Console.Write(((directoryContains[i] as DirectoryInfo).Name + "/").Remove(width - 4));
+                    else {
+                        Console.Write((directoryContains[i] as DirectoryInfo).Name + "/");
+                    }
                     Console.ResetColor();
                 }
                 else if (directoryContains[i] is FileInfo) {
@@ -46,7 +50,12 @@ namespace TerminalEmulator {
                         Console.BackgroundColor = ConsoleColor.Yellow;
                         selectedItem = directoryContains[i];
                     }
-                    Console.Write((directoryContains[i] as FileInfo).Name);
+                    if((directoryContains[i] as FileInfo).Name.Length > (width-2)) {
+                        Console.Write(((directoryContains[i] as FileInfo).Name).Remove(width - 4));
+                    }
+                    else {
+                        Console.Write((directoryContains[i] as FileInfo).Name);
+                    }
                     Console.ResetColor();
                 }
             }
@@ -68,7 +77,12 @@ namespace TerminalEmulator {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             for (int i = 1; i < height - 1; i++) {
                 Console.SetCursorPosition(isSecondTab ? 1 + width : 1, i);
-                Console.Write(" ".MultiplySpace(maxClear));
+                if(maxClear < width-4) {
+                    Console.Write(" ".MultiplySpace(maxClear));
+                }
+                else {
+                    Console.Write(" ".MultiplySpace(width-3));
+                }
             }
         }
 

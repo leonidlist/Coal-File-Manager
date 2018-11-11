@@ -56,7 +56,7 @@ namespace TerminalEmulator {
                     }
                 }
             }
-            _scrollMaxClearValue = max;
+            _scrollMaxClearValue = max + 1;
         }
 
         public void DirectoryChangedEventHandler() {
@@ -75,12 +75,22 @@ namespace TerminalEmulator {
         }
 
         public void EscapeKeyPressedHandler() {
-            if (_currentDirectory.Parent != null) {
+            if (_currentDirectory?.Parent != null) {
                 _scrollOffset = 0;
                 _selectedIndex = 0;
                 _currentDirectory = _currentDirectory.Parent;
                 Events.CallDirectoryChanged();
-                Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName);
+                Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                CalculateMax();
+            }
+            if(_currentDirectory == null) {
+                _scrollOffset = 0;
+                _selectedIndex = 0;
+                _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
+                Events.CallDirectoryChanged();
+                Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
                 Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
@@ -296,8 +306,12 @@ namespace TerminalEmulator {
         }
         public void F9KeyPressedHandler() {
             SearchEngine.ClearSearchResult();
-            string[] searchParams = Drawers.DrawSearchMenu(TabHeight, TabWidth);
+            string[] searchParams = Drawers.DrawSearchMenu(TabHeight, TabWidth*2);
             SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
+            _currentTabContains = SearchEngine.GetSearchResult();
+            CalculateMax();
+            _currentDirectory = null;
+            _core.DrawBothTabs();
             //WindowSmall resultWindow = new WindowSmall(_core,SearchEngine.GetSearchResult());
             //_core.Events.Unsubscribe(this);
             //_core.Events.Subscribe(resultWindow);

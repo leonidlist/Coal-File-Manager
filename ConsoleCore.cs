@@ -18,6 +18,10 @@ namespace TerminalEmulator {
         public Tab CurrentTab { get; set; }
         private int _maxBufferHeight;
         private int _maxBufferWidth;
+        public void DrawBothTabs() {
+            _tab1.Draw();
+            _tab2.Draw();
+        }
         public ConsoleCore() {
             SetConsoleSettings();
             _tab1 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory);
