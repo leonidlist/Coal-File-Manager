@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TerminalEmulator {
+    //TODO: Отловить исключение при нулевых значениях строк
     static class SearchEngine {
         private static ArrayList _searchResult;
         static SearchEngine() {

@@ -85,7 +85,7 @@ namespace TerminalEmulator {
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
             }
-            if(_currentDirectory == null) {
+            else if(_currentDirectory == null) {
                 _scrollOffset = 0;
                 _selectedIndex = 0;
                 _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
@@ -130,10 +130,10 @@ namespace TerminalEmulator {
                 Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
                 _isPanelOpened = true;
                 if (_selectedItem is FileInfo) {
-                    ShowFileInfo();
+                    
                 }
                 else if (_selectedItem is DirectoryInfo) {
-                    ShowDirectoryInfo();
+                    
                 }
                 _isPanelOpened = true;
             }
@@ -142,32 +142,6 @@ namespace TerminalEmulator {
                 Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 _isPanelOpened = false;
             }
-        }
-        public void ShowFileInfo() {
-            FileInfo tmp = _selectedItem as FileInfo;
-            Console.SetCursorPosition(TabWidth - 58, 2);
-            Console.Write($"File: {tmp.Name}");
-            Console.SetCursorPosition(TabWidth - 58, 3);
-            Console.Write($"File size: {(double)(tmp.Length / 1000000)} MB");
-            Console.SetCursorPosition(TabWidth - 58, 4);
-            Console.Write($"File creation time: {tmp.CreationTime}");
-        }
-        public void ShowDirectoryInfo() {
-            DirectoryInfo tmp = _selectedItem as DirectoryInfo;
-            Console.SetCursorPosition(TabWidth - 58, 2);
-            Console.Write($"Folder: {tmp.Name}");
-            Console.SetCursorPosition(TabWidth - 58, 3);
-            Console.Write($"Folder creation time: {tmp.CreationTime}");
-            Console.SetCursorPosition(TabWidth - 58, 4);
-            Console.Write($"Folders inside: {tmp.GetDirectories().Length}");
-            Console.SetCursorPosition(TabWidth - 58, 5);
-            Console.Write($"Files inside: {tmp.GetFiles().Length}");
-            Console.SetCursorPosition(TabWidth - 58, 6);
-            double totalSize = 0;
-            for (int i = 0; i < tmp.GetFiles().Length - 1; i++) {
-                totalSize += tmp.GetFiles()[i].Length;
-            }
-            Console.WriteLine($"Space usage(excluding folders): {(double)(totalSize / 1000000)} MB");
         }
         private void DeleteFile() {
             (_selectedItem as FileInfo).Delete();
@@ -214,7 +188,7 @@ namespace TerminalEmulator {
                     CalculateMax();
                 }
                 catch (Exception) {
-                    Console.SetCursorPosition(1, 1);
+                    Console.SetCursorPosition(1, TabHeight + 1);
                     Console.Write("You have not permissions to access this folder...");
                     System.Threading.Thread.Sleep(3000);
                     if(_currentDirectory.Parent != null) {
@@ -285,16 +259,10 @@ namespace TerminalEmulator {
             _isPanelOpened = false;
         }
         public void F6KeyPressedHandler() {
-            Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
-            _isPanelOpened = true;
-            Console.SetCursorPosition(TabWidth - 59, 4);
-            Console.Write("Input new directory path > ");
-            string dirName = Console.ReadLine();
-            Directory.CreateDirectory(dirName);
-            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+            Directory.CreateDirectory(Drawers.DrawMkDirMenu(TabHeight, TabWidth*2));
             Events.CallDirectoryChanged();
+            _core.DrawBothTabs();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
-            _isPanelOpened = false;
         }
         public void F7KeyPressedHandler() {
             if (_selectedItem is FileInfo) {

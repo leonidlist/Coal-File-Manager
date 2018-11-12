@@ -151,6 +151,35 @@ namespace TerminalEmulator {
             return new string[] { expression, whereTo };
         }
 
+        public static string DrawMkDirMenu(int height, int width) {
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Black;
+            //Draw gray background
+            for (int i = 0; i < 12; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4), (height / 2 - 6) + i);
+                Console.Write(" ".MultiplySpace(width / 2));
+            }
+            //Draw border inside menu
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 1);
+            Console.Write(Helpers.GetTopBorder(width / 2 - 4));
+            for (int i = 0; i < 8; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 2 + i);
+                Console.Write(Helpers.GetMiddleBorder(width / 2 - 4));
+            }
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 6) + 10);
+            Console.Write(Helpers.GetBottomBorder(width / 2 - 4));
+            //Draw
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 2);
+            Console.Write("Input your new path name: ");
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 4);
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(" ".MultiplySpace(width / 2 - 10));
+            Console.SetCursorPosition(width / 2 - (width / 4) + 4, (height / 2 - 6) + 4);
+            string expression = Console.ReadLine();
+            return expression;
+        }
+
         public static void DrawAdditionalPanel(int height, int width) {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.BackgroundColor = ConsoleColor.DarkBlue;
