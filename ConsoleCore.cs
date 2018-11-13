@@ -16,6 +16,7 @@ namespace TerminalEmulator {
         private Tab _tab1;
         private Tab _tab2;
         public Tab CurrentTab { get; set; }
+        public Tab NonActiveTab { get; set; }
         private int _maxBufferHeight;
         private int _maxBufferWidth;
         public void DrawBothTabs() {
@@ -30,6 +31,7 @@ namespace TerminalEmulator {
         }
         public void Start() {
             CurrentTab = _tab1;
+            NonActiveTab = _tab2;
             _tab1.Draw();
             _tab2.Draw();
             _events.Subscribe(_tab1);
@@ -39,11 +41,13 @@ namespace TerminalEmulator {
             if(CurrentTab == _tab1) {
                 _events.Unsubscribe(_tab1);
                 CurrentTab = _tab2;
+                NonActiveTab = _tab1;
                 _events.Subscribe(_tab2);
             }
             else {
                 _events.Unsubscribe(_tab2);
                 CurrentTab = _tab1;
+                NonActiveTab = _tab2;
                 _events.Subscribe(_tab1);
             }
         }

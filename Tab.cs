@@ -137,21 +137,17 @@ namespace TerminalEmulator {
         }
         private void DeleteFile() {
             (_selectedItem as FileInfo).Delete();
-            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            _core.NonActiveTab.DirectoryChangedEventHandler();
+            _core.DrawBothTabs();
         }
         private void DeleteDirectory() {
-            bool isPressed = false;
-            Drawers.DrawError(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
-            while (!isPressed) {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Enter) {
-                    isPressed = true;
-                }
+            bool res = Drawers.DrawConfirmationMenu(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
+            if(res) {
+                (_selectedItem as DirectoryInfo).Delete(true);
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
             }
-            (_selectedItem as DirectoryInfo).Delete(true);
-            Events.CallDirectoryChanged();
             _core.DrawBothTabs();
         }
         private void OpenTxtFile() {
@@ -185,6 +181,7 @@ namespace TerminalEmulator {
                 catch (Exception) {
                     bool isPressed = false;
                     Drawers.DrawError(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
+                    Console.SetCursorPosition(2, TabHeight + 1);
                     while (!isPressed) {
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         if (key.Key == ConsoleKey.Enter) {
@@ -252,6 +249,7 @@ namespace TerminalEmulator {
         public void F6KeyPressedHandler() {
             Directory.CreateDirectory(Drawers.DrawMkDirMenu(TabHeight, TabWidth*2));
             Events.CallDirectoryChanged();
+            _core.NonActiveTab.DirectoryChangedEventHandler();
             _core.DrawBothTabs();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }

@@ -29,10 +29,10 @@ namespace TerminalEmulator {
                 Console.SetCursorPosition(isSecondTab?width+2:2, i + 1 - offset);
                 if (directoryContains[i] is DirectoryInfo) {
                     Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
                     if (i == selected) {
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.BackgroundColor = ConsoleColor.DarkGreen;
                         selectedItem = directoryContains[i];
                     }
                     if((directoryContains[i] as DirectoryInfo).Name.Length > (width-2))
@@ -87,7 +87,7 @@ namespace TerminalEmulator {
         }
 
         public static void DrawMenu(int height) {
-            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(2, height + 3);
             Console.Write("F1 Help");
@@ -192,8 +192,8 @@ namespace TerminalEmulator {
         }
 
         public static void DrawError(int height, int width, string message) {
-            Console.BackgroundColor = ConsoleColor.Gray;
-            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Gray;
             //Draw gray background
             for (int i = 0; i < 8; i++) {
                 Console.SetCursorPosition(width / 2 - (width / 4), (height / 2 - 4) + i);
@@ -213,11 +213,74 @@ namespace TerminalEmulator {
             Console.Write(message);
             //button ok draw
             Console.SetCursorPosition(width / 2 - (width / 4) + (width / 2 - 4) / 2, (height / 2 - 4) + 5);
-            Console.BackgroundColor = ConsoleColor.DarkYellow;
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write(" OK ");
         }
-
+        public static bool DrawConfirmationMenu(int height, int width, string message) {
+            bool state = true;
+            bool isRunning = true;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Gray;
+            //Draw gray background
+            for (int i = 0; i < 8; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4), (height / 2 - 4) + i);
+                Console.Write(" ".MultiplySpace(width / 2));
+            }
+            //Draw border inside menu
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 4) + 1);
+            Console.Write(Helpers.GetTopBorder(width / 2 - 4));
+            for (int i = 0; i < 4; i++) {
+                Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 4) + 2 + i);
+                Console.Write(Helpers.GetMiddleBorder(width / 2 - 4));
+            }
+            Console.SetCursorPosition(width / 2 - (width / 4) + 2, (height / 2 - 4) + 6);
+            Console.Write(Helpers.GetBottomBorder(width / 2 - 4));
+            //
+            Console.SetCursorPosition(width / 2 - (width / 4) + (width / 2 - message.Length) / 2, (height / 2 - 4) + 3);
+            Console.Write(message);
+            while(isRunning) {
+                //button ok draw
+                Console.SetCursorPosition(width / 2 - (width / 4) + (width / 2 - 4) / 2 - 10, (height / 2 - 4) + 5);
+                if(state) {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                else {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                }
+                Console.Write(" OK ");
+                //button cancel draw
+                Console.SetCursorPosition(width / 2 - (width / 4) + (width / 2 - 4) / 2 + 10, (height / 2 - 4) + 5);
+                if (!state) {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                else {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                }
+                Console.Write(" CANCEL ");
+                Console.SetCursorPosition(2, height+1);
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                switch(key.Key) {
+                    case ConsoleKey.LeftArrow:
+                        state = !state;
+                        break;
+                    case ConsoleKey.RightArrow:
+                        state = !state;
+                        break;
+                    case ConsoleKey.Tab:
+                        state = !state;
+                        break;
+                    case ConsoleKey.Enter:
+                        isRunning = false;
+                        break;
+                }
+            }
+            return state;
+        }
         public static string DrawMkDirMenu(int height, int width) {
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.Black;
