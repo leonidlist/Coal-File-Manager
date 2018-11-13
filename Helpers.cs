@@ -18,14 +18,12 @@ namespace TerminalEmulator {
             sb.Append('╗');
             return sb.ToString();
         }
-
         public static string GetMiddleBorder(int width) {
             StringBuilder sb = new StringBuilder("║");
             sb.Append(' ', width - 2);
             sb.Append('║');
             return sb.ToString();
         }
-
         public static string GetBottomBorder(int width) {
             StringBuilder sb = new StringBuilder("╚");
             sb.Append('═', width - 2);

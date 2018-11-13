@@ -48,7 +48,7 @@ namespace TerminalEmulator {
             }
         }
         private void SetConsoleSettings() {
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.BufferHeight = Console.WindowHeight;
             Console.BufferWidth = Console.WindowWidth;
             Console.SetWindowPosition(0,0);

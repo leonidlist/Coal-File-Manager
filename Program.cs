@@ -8,7 +8,6 @@ namespace TerminalEmulator {
     class Program {
         static void Main(string[] args) {
             ConsoleCore cc = new ConsoleCore();
-            //cc.StartSearch();
             cc.Start();
         }
     }

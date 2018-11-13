@@ -60,7 +60,6 @@ namespace TerminalEmulator {
         }
 
         public void DirectoryChangedEventHandler() {
-            int max = 0;
             _currentTabContains.Clear();
             _currentTabContains.AddRange(_currentDirectory.GetDirectories());
             _currentTabContains.AddRange(_currentDirectory.GetFiles());
@@ -126,21 +125,14 @@ namespace TerminalEmulator {
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
         }
         public void F2KeyPressedHandler() {
-            if (!_isPanelOpened) {
-                Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
-                _isPanelOpened = true;
-                if (_selectedItem is FileInfo) {
-                    
+            bool isPressed = false;
+            Drawers.DrawInfoMenu(TabHeight, TabWidth*2, _selectedItem);
+            while(!isPressed) {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if(key.Key == ConsoleKey.Escape) {
+                    isPressed = true;
+                    _core.DrawBothTabs();
                 }
-                else if (_selectedItem is DirectoryInfo) {
-                    
-                }
-                _isPanelOpened = true;
-            }
-            else {
-                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
-                _isPanelOpened = false;
             }
         }
         private void DeleteFile() {
@@ -150,19 +142,22 @@ namespace TerminalEmulator {
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         private void DeleteDirectory() {
-            Console.Write("Warning! All files inside directory will be also deleted!");
+            bool isPressed = false;
+            Drawers.DrawError(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
+            while (!isPressed) {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter) {
+                    isPressed = true;
+                }
+            }
             (_selectedItem as DirectoryInfo).Delete(true);
-            System.Threading.Thread.Sleep(3000);
-            Console.SetCursorPosition(2, TabHeight + 1);
-            Console.Write(" ".MultiplySpace(TabWidth - 1));
-            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            _core.DrawBothTabs();
         }
         private void OpenTxtFile() {
             int canDraw = 58;
             using (StreamReader sr = new StreamReader(File.Open((_selectedItem as FileInfo).FullName, FileMode.Open), Encoding.Default)) {
-                Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
+                
                 string allText = sr.ReadToEnd();
                 List<string> lines = new List<string>();
                 for (int i = 0; i < allText.Length / canDraw; i++) {
@@ -188,28 +183,26 @@ namespace TerminalEmulator {
                     CalculateMax();
                 }
                 catch (Exception) {
-                    Console.SetCursorPosition(1, TabHeight + 1);
-                    Console.Write("You have not permissions to access this folder...");
-                    System.Threading.Thread.Sleep(3000);
-                    if(_currentDirectory.Parent != null) {
+                    bool isPressed = false;
+                    Drawers.DrawError(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
+                    while (!isPressed) {
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        if (key.Key == ConsoleKey.Enter) {
+                            isPressed = true;
+                        }
+                    }
+                    if (_currentDirectory.Parent != null) {
                         _currentDirectory = _currentDirectory.Parent;
                     }
                     else {
                         _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                     }
                     Events.CallDirectoryChanged();
-                    Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                    Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                    Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                    _core.DrawBothTabs();
                 }
-            }
-            else if ((_selectedItem as FileInfo).Extension == ".txt") {
-                OpenTxtFile();
             }
         }
         public void F3KeyPressedHandler() {
-            Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
-            _isPanelOpened = true;
             Console.SetCursorPosition(TabWidth - 59, 4);
             Console.Write("Input target path to move > ");
             string movePath = Console.ReadLine();
@@ -234,10 +227,8 @@ namespace TerminalEmulator {
             Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
-            _isPanelOpened = false;
         }
         public void F5KeyPressedHandler() {
-            Drawers.DrawAdditionalPanel(TabHeight, TabWidth);
             _isPanelOpened = true;
             Console.SetCursorPosition(TabWidth - 59, 4);
             Console.Write("Input target path to copy > ");
@@ -280,11 +271,6 @@ namespace TerminalEmulator {
             CalculateMax();
             _currentDirectory = null;
             _core.DrawBothTabs();
-            //WindowSmall resultWindow = new WindowSmall(_core,SearchEngine.GetSearchResult());
-            //_core.Events.Unsubscribe(this);
-            //_core.Events.Subscribe(resultWindow);
-            //resultWindow.Draw();
-            //_core.CurrentWindow = resultWindow;
         }
     }
 }
