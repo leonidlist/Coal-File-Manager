@@ -5,4 +5,4 @@
 ##
 Coal file manager was developed for educational purposes. The purpose of creation is to create a file manager, which is a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) console application.
 
-![](https://i.screenshot.net/eznkqfx)
+![](https://screenshot.net/xoo13ck)
