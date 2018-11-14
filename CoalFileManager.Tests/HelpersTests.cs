@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TerminalEmulator;
+using Coal.Draw;
 
 namespace CoalFileManager.Tests {
     [TestClass]
@@ -21,7 +21,7 @@ namespace CoalFileManager.Tests {
             int width = 6;
             string expected = "╔════╗";
             //act
-            string actual = Helpers.GetTopBorder(width);
+            string actual = Borders.GetTopBorder(width);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -31,7 +31,7 @@ namespace CoalFileManager.Tests {
             int width = 8;
             string expected = "║      ║";
             //act
-            string actual = Helpers.GetMiddleBorder(width);
+            string actual = Borders.GetMiddleBorder(width);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -41,7 +41,7 @@ namespace CoalFileManager.Tests {
             int width = 10;
             string expected = "╚════════╝";
             //act
-            string actual = Helpers.GetBottomBorder(width);
+            string actual = Borders.GetBottomBorder(width);
             //assert
             Assert.AreEqual(expected, actual);
         }

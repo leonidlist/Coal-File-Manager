@@ -62,13 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coal.Core.cs" />
-    <Compile Include="Drawers.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="Helpers.cs" />
     <Compile Include="KeyHandlers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SearchEngine.cs" />
     <Compile Include="Tab.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +83,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Coal.Draw\Coal.Draw.csproj">
+      <Project>{e19f47f2-a83a-4e71-9d51-283cccda207b}</Project>
+      <Name>Coal.Draw</Name>
+    </ProjectReference>
+    <ProjectReference Include="Coal.Search\Coal.Search.csproj">
+      <Project>{a2668967-9d21-47c2-bd99-89eac1aca5aa}</Project>
+      <Name>Coal.Search</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

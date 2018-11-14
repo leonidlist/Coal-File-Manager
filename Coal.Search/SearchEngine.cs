@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TerminalEmulator {
-    //TODO: Отловить исключение при нулевых значениях строк
-    static class SearchEngine {
+namespace Coal.Search
+{
+    public static class SearchEngine {
         private static ArrayList _searchResult;
         static SearchEngine() {
             _searchResult = new ArrayList();
@@ -57,7 +53,8 @@ namespace TerminalEmulator {
                         }
                     }
                 }
-            } catch(Exception) { }
+            }
+            catch (Exception) { }
         }
 
         public static void SearchByCreationTime(DateTime time, DirectoryInfo curr) {
@@ -78,7 +75,8 @@ namespace TerminalEmulator {
                         }
                     }
                 }
-            } catch (Exception) { }
+            }
+            catch (Exception) { }
         }
     }
 }

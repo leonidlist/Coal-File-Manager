@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Coal.Draw\Coal.Draw.csproj" />
     <ProjectReference Include="..\CoalFileManager.csproj" />
   </ItemGroup>
 

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using Coal.Draw;
+using Coal.Search;
 
 namespace TerminalEmulator {
     class Tab {
@@ -65,11 +65,11 @@ namespace TerminalEmulator {
         }
 
         public void Draw() {
-            Drawers.DrawBorder(TabHeight, TabWidth, _isSecond);
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, 0, _isSecond);
-            Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond);
+            Borders.DrawBorder(TabHeight, TabWidth, _isSecond);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, 0, _isSecond);
+            Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond);
             if (!_isSecond)
-                Drawers.DrawMenu(TabHeight);
+                BottomMenu.DrawMenu(TabHeight);
         }
 
         public void EscapeKeyPressedHandler() {
@@ -78,9 +78,9 @@ namespace TerminalEmulator {
                 _selectedIndex = 0;
                 _currentDirectory = _currentDirectory.Parent;
                 Events.CallDirectoryChanged();
-                Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
             }
             else if(_currentDirectory == null) {
@@ -88,9 +88,9 @@ namespace TerminalEmulator {
                 _selectedIndex = 0;
                 _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                 Events.CallDirectoryChanged();
-                Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
             }
         }
@@ -102,11 +102,11 @@ namespace TerminalEmulator {
             }
             else if (_selectedIndex > TabHeight - 3 + _scrollOffset && _selectedIndex < _currentTabContains.Count) {
                 _scrollOffset++;
-                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 return;
             }
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
         }
 
         public void ArrowUpKeyPressedHandler() {
@@ -117,15 +117,15 @@ namespace TerminalEmulator {
             }
             if (_selectedIndex < _scrollOffset) {
                 _scrollOffset--;
-                Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue,_isSecond);
-                Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue,_isSecond);
+                Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 return;
             }
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
         }
         public void F2KeyPressedHandler() {
             bool isPressed = false;
-            Drawers.DrawInfoMenu(TabHeight, TabWidth*2, _selectedItem);
+            Widgets.DrawInfoMenu(TabHeight, TabWidth*2, _selectedItem);
             while(!isPressed) {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if(key.Key == ConsoleKey.Escape) {
@@ -141,7 +141,7 @@ namespace TerminalEmulator {
             _core.DrawBothTabs();
         }
         private void DeleteDirectory() {
-            bool res = Drawers.DrawConfirmationMenu(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
+            bool res = Widgets.DrawConfirmationMenu(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
             if(res) {
                 (_selectedItem as DirectoryInfo).Delete(true);
                 Events.CallDirectoryChanged();
@@ -171,14 +171,14 @@ namespace TerminalEmulator {
                     _scrollOffset = 0;
                     _currentDirectory = _selectedItem as DirectoryInfo;
                     Events.CallDirectoryChanged();
-                    Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
-                    Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-                    Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                    Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                    Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                    Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                     CalculateMax();
                 }
                 catch (Exception) {
                     bool isPressed = false;
-                    Drawers.DrawError(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
+                    Widgets.DrawError(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
                     Console.SetCursorPosition(2, TabHeight + 1);
                     while (!isPressed) {
                         ConsoleKeyInfo key = Console.ReadKey(true);
@@ -219,9 +219,9 @@ namespace TerminalEmulator {
                     Console.Write(e.Message);
                 }
             }
-            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+            Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Events.CallDirectoryChanged();
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         public void F5KeyPressedHandler() {
             Console.SetCursorPosition(TabWidth - 59, 4);
@@ -239,15 +239,15 @@ namespace TerminalEmulator {
             else if (_selectedItem is DirectoryInfo) {
                 //TODO: Создать способ копирования папок
             }
-            Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         public void F6KeyPressedHandler() {
-            Directory.CreateDirectory(Drawers.DrawMkDirMenu(TabHeight, TabWidth*2));
+            Directory.CreateDirectory(Widgets.DrawMkDirMenu(TabHeight, TabWidth*2));
             Events.CallDirectoryChanged();
             _core.NonActiveTab.DirectoryChangedEventHandler();
             _core.DrawBothTabs();
-            Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         public void F7KeyPressedHandler() {
             if (_selectedItem is FileInfo) {
@@ -257,9 +257,10 @@ namespace TerminalEmulator {
                 DeleteDirectory();
             }
         }
+        //TODO: Переход в директорию и обратно в поиске
         public void F9KeyPressedHandler() {
             SearchEngine.ClearSearchResult();
-            string[] searchParams = Drawers.DrawSearchMenu(TabHeight, TabWidth*2);
+            string[] searchParams = Widgets.DrawSearchMenu(TabHeight, TabWidth*2);
             SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
             _currentTabContains = SearchEngine.GetSearchResult();
             CalculateMax();

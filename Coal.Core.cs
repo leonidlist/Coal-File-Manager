@@ -58,6 +58,7 @@ namespace TerminalEmulator {
             Console.SetWindowPosition(0,0);
             _maxBufferHeight = Console.BufferHeight - 1;
             _maxBufferWidth = Console.BufferWidth;
+            Console.CursorVisible = false;
         }
         public void F10KeyPressedHandler() {
             Console.ForegroundColor = ConsoleColor.White;
