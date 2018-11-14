@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleCore.cs" />
+    <Compile Include="Coal.Core.cs" />
     <Compile Include="Drawers.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Helpers.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 namespace TerminalEmulator {
-    static class Helpers {
+    public static class Helpers {
         public static string MultiplySpace(this String s, int amount) {
             StringBuilder sb = new StringBuilder(s);
             sb.Append(' ', amount);

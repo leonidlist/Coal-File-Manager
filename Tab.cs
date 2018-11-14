@@ -9,7 +9,7 @@ using System.IO;
 namespace TerminalEmulator {
     class Tab {
         private bool _isSecond = false;
-        private ConsoleCore _core;
+        private CoalCore _core;
         private ArrayList _currentTabContains;
         private DirectoryInfo _currentDirectory;
         private object _selectedItem;
@@ -18,7 +18,6 @@ namespace TerminalEmulator {
         private int _scrollOffset;
         public int TabHeight { get; set; }
         public int TabWidth { get; set; }
-        private bool _isPanelOpened = false;
 
         public Tab() {
             _currentDirectory = null;
@@ -28,7 +27,7 @@ namespace TerminalEmulator {
             _selectedIndex = _scrollOffset = TabHeight = TabWidth = 0;
         }
 
-        public Tab(ConsoleCore core, DirectoryInfo currentDirectory, bool iS = false) {
+        public Tab(CoalCore core, DirectoryInfo currentDirectory, bool iS = false) {
             _isSecond = iS;
             _core = core;
             _currentDirectory = currentDirectory;
@@ -170,7 +169,6 @@ namespace TerminalEmulator {
                 try {
                     _selectedIndex = 0;
                     _scrollOffset = 0;
-                    _isPanelOpened = false;
                     _currentDirectory = _selectedItem as DirectoryInfo;
                     Events.CallDirectoryChanged();
                     Drawers.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
@@ -226,7 +224,6 @@ namespace TerminalEmulator {
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         public void F5KeyPressedHandler() {
-            _isPanelOpened = true;
             Console.SetCursorPosition(TabWidth - 59, 4);
             Console.Write("Input target path to copy > ");
             string copyPath = Console.ReadLine();
@@ -244,7 +241,6 @@ namespace TerminalEmulator {
             }
             Drawers.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
             Drawers.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
-            _isPanelOpened = false;
         }
         public void F6KeyPressedHandler() {
             Directory.CreateDirectory(Drawers.DrawMkDirMenu(TabHeight, TabWidth*2));

@@ -8,7 +8,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace TerminalEmulator {
-    sealed class ConsoleCore {
+    sealed class CoalCore {
         private Events _events;
         public Events Events {
             get => _events;
@@ -23,7 +23,7 @@ namespace TerminalEmulator {
             _tab1.Draw();
             _tab2.Draw();
         }
-        public ConsoleCore() {
+        public CoalCore() {
             SetConsoleSettings();
             _tab1 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory);
             _tab2 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory, true);
@@ -65,7 +65,7 @@ namespace TerminalEmulator {
             Console.Clear();
             Environment.Exit(0);
         }
-        ~ConsoleCore() {
+        ~CoalCore() {
             Console.ResetColor();
         }
     }

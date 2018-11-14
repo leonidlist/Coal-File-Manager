@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TerminalEmulator {
     class Program {
         static void Main(string[] args) {
-            ConsoleCore cc = new ConsoleCore();
+            CoalCore cc = new CoalCore();
             cc.Start();
         }
     }

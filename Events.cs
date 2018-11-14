@@ -22,7 +22,7 @@ namespace TerminalEmulator {
         public static void CallDirectoryChanged() {
             DirectoryChanged?.Invoke();
         }
-        public Events(ConsoleCore core) {
+        public Events(CoalCore core) {
             TabKeyPressed += core.TabHandler;
             F10KeyPressed += core.F10KeyPressedHandler;
         }
