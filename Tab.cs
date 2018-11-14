@@ -12,6 +12,7 @@ namespace TerminalEmulator {
         private CoalCore _core;
         private ArrayList _currentTabContains;
         private DirectoryInfo _currentDirectory;
+        public DirectoryInfo CurrentDirectory { get => _currentDirectory; }
         private object _selectedItem;
         private int _scrollMaxClearValue;
         private int _selectedIndex;
@@ -67,7 +68,7 @@ namespace TerminalEmulator {
         public void Draw() {
             Borders.DrawBorder(TabHeight, TabWidth, _isSecond);
             Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, 0, _isSecond);
-            Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond);
+            Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond, _core.CurrentTab==this?true:false);
             if (!_isSecond)
                 BottomMenu.DrawMenu(TabHeight);
         }
@@ -125,7 +126,7 @@ namespace TerminalEmulator {
         }
         public void F2KeyPressedHandler() {
             bool isPressed = false;
-            Widgets.DrawInfoMenu(TabHeight, TabWidth*2, _selectedItem);
+            Info.Execute(TabHeight, TabWidth*2, _selectedItem);
             while(!isPressed) {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if(key.Key == ConsoleKey.Escape) {
@@ -178,7 +179,7 @@ namespace TerminalEmulator {
                 }
                 catch (Exception) {
                     bool isPressed = false;
-                    Widgets.DrawError(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
+                    Error.Execute(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
                     Console.SetCursorPosition(2, TabHeight + 1);
                     while (!isPressed) {
                         ConsoleKeyInfo key = Console.ReadKey(true);
@@ -260,12 +261,16 @@ namespace TerminalEmulator {
         //TODO: Переход в директорию и обратно в поиске
         public void F9KeyPressedHandler() {
             SearchEngine.ClearSearchResult();
-            string[] searchParams = Widgets.DrawSearchMenu(TabHeight, TabWidth*2);
-            SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
-            _currentTabContains = SearchEngine.GetSearchResult();
-            CalculateMax();
-            _currentDirectory = null;
-            _core.DrawBothTabs();
+            string[] searchParams = Search.Execute(TabHeight, TabWidth*2);
+            if(searchParams!=null && searchParams[0]!=string.Empty && searchParams[1]!=string.Empty) {
+                SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
+                _currentTabContains = SearchEngine.GetSearchResult();
+                CalculateMax();
+                _currentDirectory = null;
+                _core.DrawBothTabs();
+            } else {
+                _core.DrawBothTabs();
+            }
         }
     }
 }

@@ -6,8 +6,8 @@ namespace Coal.Draw
     public static class Borders {
         public static void DrawBorder(int height, int width, bool isSecondTab = false) {
             for (int i = 0; i < height; i++) {
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.SetCursorPosition(isSecondTab ? width : 0, i);
                 if (i == 0) {
                     Console.Write(GetTopBorder(width));
@@ -19,7 +19,6 @@ namespace Coal.Draw
                     Console.Write(GetMiddleBorder(width));
                 }
             }
-            Console.ResetColor();
         }
         public static string GetTopBorder(int width) {
             StringBuilder sb = new StringBuilder("╔");

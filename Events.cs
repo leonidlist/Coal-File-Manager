@@ -54,8 +54,6 @@ namespace TerminalEmulator {
         }
         public void Selecter(int height) {
             while (true) {
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.SetCursorPosition(2, height + 1);
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.DownArrow) {

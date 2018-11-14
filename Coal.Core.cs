@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Text.RegularExpressions;
+using Coal.Draw;
 
 namespace TerminalEmulator {
     sealed class CoalCore {
@@ -19,19 +14,20 @@ namespace TerminalEmulator {
         public Tab NonActiveTab { get; set; }
         private int _maxBufferHeight;
         private int _maxBufferWidth;
-        public void DrawBothTabs() {
-            _tab1.Draw();
-            _tab2.Draw();
-        }
         public CoalCore() {
             SetConsoleSettings();
             _tab1 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory);
             _tab2 = new Tab(this, DriveInfo.GetDrives()[0].RootDirectory, true);
             _events = new Events(this);
         }
+        public void DrawBothTabs() {
+            _tab1.Draw();
+            _tab2.Draw();
+        }
         public void Start() {
             CurrentTab = _tab1;
             NonActiveTab = _tab2;
+            Clear.ClearBottom(_tab1.TabHeight, _maxBufferWidth);
             _tab1.Draw();
             _tab2.Draw();
             _events.Subscribe(_tab1);
@@ -41,18 +37,21 @@ namespace TerminalEmulator {
             if(CurrentTab == _tab1) {
                 _events.Unsubscribe(_tab1);
                 CurrentTab = _tab2;
+                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2.CurrentDirectory.FullName, true, true);
                 NonActiveTab = _tab1;
+                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1.CurrentDirectory.FullName, false, false);
                 _events.Subscribe(_tab2);
             }
             else {
                 _events.Unsubscribe(_tab2);
                 CurrentTab = _tab1;
+                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1.CurrentDirectory.FullName, false, true);
                 NonActiveTab = _tab2;
+                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2.CurrentDirectory.FullName, true, false);
                 _events.Subscribe(_tab1);
             }
         }
         private void SetConsoleSettings() {
-            Console.BackgroundColor = ConsoleColor.Black;
             Console.BufferHeight = Console.WindowHeight;
             Console.BufferWidth = Console.WindowWidth;
             Console.SetWindowPosition(0,0);
@@ -67,7 +66,8 @@ namespace TerminalEmulator {
             Environment.Exit(0);
         }
         ~CoalCore() {
-            Console.ResetColor();
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Coal.Draw {
     public static class BottomMenu {
         public static void DrawMenu(int height) {
-            Console.BackgroundColor = ConsoleColor.DarkGreen;
-            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(2, height + 3);
             Console.Write("F1 Help");
             Console.SetCursorPosition(12, height + 3);
@@ -29,7 +29,6 @@ namespace Coal.Draw {
             Console.Write("F9 Search");
             Console.SetCursorPosition(103, height + 3);
             Console.Write("F10 Quit");
-            Console.ResetColor();
         }
     }
 }
