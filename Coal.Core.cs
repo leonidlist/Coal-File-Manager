@@ -2,7 +2,7 @@
 using System.IO;
 using Coal.Draw;
 
-namespace TerminalEmulator {
+namespace Coal {
     sealed class CoalCore {
         private Events _events;
         public Events Events {

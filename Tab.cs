@@ -6,7 +6,7 @@ using System.IO;
 using Coal.Draw;
 using Coal.Search;
 
-namespace TerminalEmulator {
+namespace Coal {
     class Tab {
         private bool _isSecond = false;
         private CoalCore _core;
@@ -142,7 +142,7 @@ namespace TerminalEmulator {
             _core.DrawBothTabs();
         }
         private void DeleteDirectory() {
-            bool res = Widgets.DrawConfirmationMenu(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
+            bool res = Confirmation.Execute(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
             if(res) {
                 (_selectedItem as DirectoryInfo).Delete(true);
                 Events.CallDirectoryChanged();
@@ -244,11 +244,16 @@ namespace TerminalEmulator {
             Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
         }
         public void F6KeyPressedHandler() {
-            Directory.CreateDirectory(Widgets.DrawMkDirMenu(TabHeight, TabWidth*2));
-            Events.CallDirectoryChanged();
-            _core.NonActiveTab.DirectoryChangedEventHandler();
-            _core.DrawBothTabs();
-            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            string path = MakeDir.Execute(TabHeight, TabWidth * 2);
+            if(path != null && path != String.Empty) {
+                Directory.CreateDirectory(path);
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
+                _core.DrawBothTabs();
+            } 
+            else {
+                _core.DrawBothTabs();
+            }
         }
         public void F7KeyPressedHandler() {
             if (_selectedItem is FileInfo) {
@@ -261,7 +266,7 @@ namespace TerminalEmulator {
         //TODO: Переход в директорию и обратно в поиске
         public void F9KeyPressedHandler() {
             SearchEngine.ClearSearchResult();
-            string[] searchParams = Search.Execute(TabHeight, TabWidth*2);
+            string[] searchParams = Coal.Draw.Search.Execute(TabHeight, TabWidth*2);
             if(searchParams!=null && searchParams[0]!=string.Empty && searchParams[1]!=string.Empty) {
                 SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
                 _currentTabContains = SearchEngine.GetSearchResult();

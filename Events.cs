@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalEmulator {
+namespace Coal {
     class Events {
         private static event Action DirectoryChanged;
         private event Action ArrowDownKeyPressed;
