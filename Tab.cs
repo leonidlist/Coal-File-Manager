@@ -79,7 +79,7 @@ namespace Coal {
                 _selectedIndex = 0;
                 _currentDirectory = _currentDirectory.Parent;
                 Events.CallDirectoryChanged();
-                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
                 Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
@@ -89,7 +89,7 @@ namespace Coal {
                 _selectedIndex = 0;
                 _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                 Events.CallDirectoryChanged();
-                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
                 Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
@@ -136,10 +136,15 @@ namespace Coal {
             }
         }
         private void DeleteFile() {
-            (_selectedItem as FileInfo).Delete();
-            Events.CallDirectoryChanged();
-            _core.NonActiveTab.DirectoryChangedEventHandler();
-            _core.DrawBothTabs();
+            if(Confirmation.Execute(TabHeight, TabWidth*2, "Are you sure that you want to delete this file?")) {
+                (_selectedItem as FileInfo).Delete();
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
+                _core.DrawBothTabs();
+            }
+            else {
+                _core.DrawBothTabs();
+            }
         }
         private void DeleteDirectory() {
             bool res = Confirmation.Execute(TabHeight, TabWidth * 2, "Warning! All files inside directory will be also deleted!");
@@ -150,21 +155,6 @@ namespace Coal {
             }
             _core.DrawBothTabs();
         }
-        private void OpenTxtFile() {
-            int canDraw = 58;
-            using (StreamReader sr = new StreamReader(File.Open((_selectedItem as FileInfo).FullName, FileMode.Open), Encoding.Default)) {
-                
-                string allText = sr.ReadToEnd();
-                List<string> lines = new List<string>();
-                for (int i = 0; i < allText.Length / canDraw; i++) {
-                    lines.Add(allText.Substring(i * canDraw, canDraw));
-                }
-                for (int i = 0; i < lines.Count; i++) {
-                    Console.SetCursorPosition(TabWidth - 59, 2 + i);
-                    Console.Write(lines[i]);
-                }
-            }
-        }
         public void EnterKeyPressedHandler() {
             if (_selectedItem is DirectoryInfo) {
                 try {
@@ -172,7 +162,7 @@ namespace Coal {
                     _scrollOffset = 0;
                     _currentDirectory = _selectedItem as DirectoryInfo;
                     Events.CallDirectoryChanged();
-                    Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond);
+                    Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
                     Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                     Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                     CalculateMax();
@@ -199,49 +189,71 @@ namespace Coal {
             }
         }
         public void F3KeyPressedHandler() {
-            Console.SetCursorPosition(TabWidth - 59, 4);
-            Console.Write("Input target path to move > ");
-            string movePath = Console.ReadLine();
-            if (_selectedItem is FileInfo) {
-                try {
-                    (_selectedItem as FileInfo).MoveTo(movePath + (_selectedItem as FileInfo).Name);
+            string movePath = Move.Execute(TabHeight, TabWidth*2);
+            if (movePath != null && movePath != String.Empty) {
+                if (_selectedItem is FileInfo) {
+                    try {
+                        (_selectedItem as FileInfo).MoveTo(movePath + (_selectedItem as FileInfo).Name);
+                    }
+                    catch (Exception e) {
+                        Error.Execute(TabHeight, TabWidth*2, e.Message);
+                    }
                 }
-                catch (Exception e) {
-                    Console.SetCursorPosition(TabWidth - 59, 5);
-                    Console.Write(e.Message);
+                else if (_selectedItem is DirectoryInfo) {
+                    try {
+                        (_selectedItem as DirectoryInfo).MoveTo(movePath + (_selectedItem as DirectoryInfo).Name);
+                    }
+                    catch (Exception e) {
+                        Error.Execute(TabHeight, TabWidth*2, e.Message);
+                    }
                 }
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
             }
-            else if (_selectedItem is DirectoryInfo) {
-                try {
-                    (_selectedItem as DirectoryInfo).MoveTo(movePath + (_selectedItem as DirectoryInfo).Name);
+            _core.DrawBothTabs();
+        }
+        public void F4KeyPressHandler() {
+            string newName = Edit.Execute(TabWidth*2, TabHeight);
+            if(newName != null && newName != String.Empty) {
+                if(_selectedItem is FileInfo) {
+                    try {
+                        (_selectedItem as FileInfo).CopyTo(_currentDirectory.FullName + "\\" + newName + (_selectedItem as FileInfo).Extension);
+                        (_selectedItem as FileInfo).Delete();
+                    } catch(Exception e) {
+                        Error.Execute(TabHeight, TabWidth, e.Message);
+                    }
                 }
-                catch (Exception e) {
-                    Console.SetCursorPosition(TabWidth - 59, 5);
-                    Console.Write(e.Message);
+                else if (_selectedItem is DirectoryInfo) {
+                    try {
+                        (_selectedItem as DirectoryInfo).MoveTo(CurrentDirectory.FullName + newName);
+                    }
+                    catch (Exception e) {
+                        Error.Execute(TabHeight, TabWidth, e.Message);
+                    }
                 }
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
             }
-            Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-            Events.CallDirectoryChanged();
-            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            _core.DrawBothTabs();
         }
         public void F5KeyPressedHandler() {
-            Console.SetCursorPosition(TabWidth - 59, 4);
-            Console.Write("Input target path to copy > ");
-            string copyPath = Console.ReadLine();
-            if (_selectedItem is FileInfo) {
-                try {
-                    (_selectedItem as FileInfo).CopyTo(copyPath + (_selectedItem as FileInfo).Name);
+            string copyPath = Copy.Execute(TabHeight, TabWidth*2);
+            if(copyPath != null && copyPath != String.Empty) {
+                if (_selectedItem is FileInfo) {
+                    try {
+                        (_selectedItem as FileInfo).CopyTo(copyPath + (_selectedItem as FileInfo).Name);
+                    }
+                    catch (Exception e) {
+                        Error.Execute(TabHeight, TabWidth * 2, e.Message);
+                    }
                 }
-                catch (Exception e) {
-                    Console.SetCursorPosition(TabWidth - 59, 5);
-                    Console.Write(e.Message);
+                else if (_selectedItem is DirectoryInfo) {
+                    //TODO: Создать способ копирования папок
                 }
+                Events.CallDirectoryChanged();
+                _core.NonActiveTab.DirectoryChangedEventHandler();
             }
-            else if (_selectedItem is DirectoryInfo) {
-                //TODO: Создать способ копирования папок
-            }
-            Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
-            Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset);
+            _core.DrawBothTabs();
         }
         public void F6KeyPressedHandler() {
             string path = MakeDir.Execute(TabHeight, TabWidth * 2);

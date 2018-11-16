@@ -13,6 +13,7 @@ namespace Coal {
         private event Action EnterKeyPressed;
         private event Action F2KeyPressed;
         private event Action F3KeyPressed;
+        private event Action F4KeyPressed;
         private event Action F5KeyPressed;
         private event Action F6KeyPressed;
         private event Action F7KeyPressed;
@@ -33,6 +34,7 @@ namespace Coal {
             EnterKeyPressed += window.EnterKeyPressedHandler;
             F2KeyPressed += window.F2KeyPressedHandler;
             F3KeyPressed += window.F3KeyPressedHandler;
+            F4KeyPressed += window.F4KeyPressHandler;
             F5KeyPressed += window.F5KeyPressedHandler;
             F6KeyPressed += window.F6KeyPressedHandler;
             F7KeyPressed += window.F7KeyPressedHandler;
@@ -46,6 +48,7 @@ namespace Coal {
             EnterKeyPressed -= window.EnterKeyPressedHandler;
             F2KeyPressed -= window.F2KeyPressedHandler;
             F3KeyPressed -= window.F3KeyPressedHandler;
+            F4KeyPressed -= window.F4KeyPressHandler;
             F5KeyPressed -= window.F5KeyPressedHandler;
             F6KeyPressed -= window.F6KeyPressedHandler;
             F7KeyPressed -= window.F7KeyPressedHandler;
@@ -73,6 +76,9 @@ namespace Coal {
                 }
                 else if (keyInfo.Key == ConsoleKey.F3) {
                     F3KeyPressed?.Invoke();
+                }
+                else if(keyInfo.Key == ConsoleKey.F4) {
+                    F4KeyPressed?.Invoke();
                 }
                 else if (keyInfo.Key == ConsoleKey.F5) {
                     F5KeyPressed?.Invoke();

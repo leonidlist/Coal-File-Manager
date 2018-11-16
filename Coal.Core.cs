@@ -37,17 +37,17 @@ namespace Coal {
             if(CurrentTab == _tab1) {
                 _events.Unsubscribe(_tab1);
                 CurrentTab = _tab2;
-                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2.CurrentDirectory.FullName, true, true);
+                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2?.CurrentDirectory?.FullName, true, true);
                 NonActiveTab = _tab1;
-                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1.CurrentDirectory.FullName, false, false);
+                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1?.CurrentDirectory?.FullName, false, false);
                 _events.Subscribe(_tab2);
             }
             else {
                 _events.Unsubscribe(_tab2);
                 CurrentTab = _tab1;
-                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1.CurrentDirectory.FullName, false, true);
+                Directories.DrawCurrentDirectory(_tab1.TabWidth, _tab1?.CurrentDirectory?.FullName, false, true);
                 NonActiveTab = _tab2;
-                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2.CurrentDirectory.FullName, true, false);
+                Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2?.CurrentDirectory?.FullName, true, false);
                 _events.Subscribe(_tab1);
             }
         }
