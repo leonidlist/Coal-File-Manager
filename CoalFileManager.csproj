@@ -89,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Coal.CopyDir\Coal.CopyDir.csproj">
-      <Project>{aa06dd7b-9723-43dc-97cc-24c57a8dfc79}</Project>
+      <Project>{267a9990-ed9f-4e93-8104-8e9b0a697fe3}</Project>
       <Name>Coal.CopyDir</Name>
     </ProjectReference>
     <ProjectReference Include="Coal.Draw\Coal.Draw.csproj">

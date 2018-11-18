@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}</ProjectGuid>
+    <ProjectGuid>{267A9990-ED9F-4E93-8104-8E9B0A697FE3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Coal.CopyDir</RootNamespace>

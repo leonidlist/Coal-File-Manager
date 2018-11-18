@@ -26,16 +26,16 @@ namespace Coal {
             _tab2.Draw();
         }
         public void Start() {
-            Clock.Width = _maxBufferWidth;
-            Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             CurrentTab = _tab1;
             NonActiveTab = _tab2;
             Clear.ClearBottom(_tab1.TabHeight, _maxBufferWidth);
             _tab1.Draw();
             _tab2.Draw();
             _events.Subscribe(_tab1);
-            _events.Selecter(_tab1.TabHeight);
+            Clock.Width = _maxBufferWidth;
+            Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             clockThread.Start();
+            _events.Selecter(_tab1.TabHeight);
         }
         public void TabHandler() {
             if(CurrentTab == _tab1) {
