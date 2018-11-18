@@ -11,7 +11,12 @@ namespace Coal.Draw {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.DarkRed;
             Console.SetCursorPosition(Width - 10, 0);
-            Console.Write(DateTime.Now.Hour + ":" + DateTime.Now.Minute);
+            if(DateTime.Now.Minute < 10) {
+                Console.WriteLine(DateTime.Now.Hour + ":0" + DateTime.Now.Minute);
+            }
+            else {
+                Console.WriteLine(DateTime.Now.Hour + ":" + DateTime.Now.Minute);
+            }
             return DateTime.Now;
         }
         public static void Execute() {
@@ -22,7 +27,12 @@ namespace Coal.Draw {
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.DarkRed;
                     Console.SetCursorPosition(Width - 10, 0);
-                    Console.Write(time.Hour + ":" + time.Minute);
+                    if (DateTime.Now.Minute < 10) {
+                        Console.WriteLine(time.Hour + ":0" + time.Minute);
+                    }
+                    else {
+                        Console.WriteLine(time.Hour + ":" + time.Minute);
+                    }
                 }
             }
         }
