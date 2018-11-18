@@ -52,6 +52,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="MakeDir.cs" />
+    <Compile Include="MkFile.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search.cs" />

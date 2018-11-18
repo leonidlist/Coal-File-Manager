@@ -11,6 +11,7 @@ namespace Coal.Draw {
             DrawBorder(width, height);
             DrawMessage(width, height, message);
             DrawButton(width, height);
+            ButtonHandling(width, height);
         }
 
         private static void DrawBackground(int width, int height) {
@@ -50,6 +51,17 @@ namespace Coal.Draw {
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.SetCursorPosition(width / 2 - (width / 4) + (width / 2 - 4) / 2, (height / 2 - 4) + 5);
             Console.Write(" OK ");
+        }
+
+        private static bool ButtonHandling(int width, int height) {
+            bool isRunning = true;
+            while (isRunning) {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter) {
+                    isRunning = false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -5,11 +5,13 @@ VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoalFileManager", "CoalFileManager.csproj", "{DABC5192-0636-4782-A87D-1E1C2F549EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoalFileManager.Tests", "CoalFileManager.Tests\CoalFileManager.Tests.csproj", "{1D49C76D-A68D-4599-A413-3259666A1675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoalFileManager.Tests", "CoalFileManager.Tests\CoalFileManager.Tests.csproj", "{1D49C76D-A68D-4599-A413-3259666A1675}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coal.Draw", "Coal.Draw\Coal.Draw.csproj", "{E19F47F2-A83A-4E71-9D51-283CCCDA207B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coal.Search", "Coal.Search\Coal.Search.csproj", "{A2668967-9D21-47C2-BD99-89EAC1ACA5AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coal.CopyDir", "..\Terminal Emulator\Coal.CopyDir\Coal.CopyDir.csproj", "{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A2668967-9D21-47C2-BD99-89EAC1ACA5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2668967-9D21-47C2-BD99-89EAC1ACA5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2668967-9D21-47C2-BD99-89EAC1ACA5AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA06DD7B-9723-43DC-97CC-24C57A8DFC79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

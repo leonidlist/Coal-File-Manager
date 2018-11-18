@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Coal.Draw;
 using Coal.Search;
+using Coal.CopyDir;
 
 namespace Coal {
     class Tab {
@@ -168,15 +169,7 @@ namespace Coal {
                     CalculateMax();
                 }
                 catch (Exception) {
-                    bool isPressed = false;
                     Error.Execute(TabHeight, TabWidth*2, "You have no permissions to enter this folder");
-                    Console.SetCursorPosition(2, TabHeight + 1);
-                    while (!isPressed) {
-                        ConsoleKeyInfo key = Console.ReadKey(true);
-                        if (key.Key == ConsoleKey.Enter) {
-                            isPressed = true;
-                        }
-                    }
                     if (_currentDirectory.Parent != null) {
                         _currentDirectory = _currentDirectory.Parent;
                     }
@@ -241,14 +234,19 @@ namespace Coal {
             if(copyPath != null && copyPath != String.Empty) {
                 if (_selectedItem is FileInfo) {
                     try {
-                        (_selectedItem as FileInfo).CopyTo(copyPath + (_selectedItem as FileInfo).Name);
+                        (_selectedItem as FileInfo).CopyTo(copyPath);
                     }
                     catch (Exception e) {
                         Error.Execute(TabHeight, TabWidth * 2, e.Message);
                     }
                 }
                 else if (_selectedItem is DirectoryInfo) {
-                    //TODO: Создать способ копирования папок
+                    try {
+                        CopyDirectory cp = new CopyDirectory();
+                        cp.CopyDir(_selectedItem as DirectoryInfo, new DirectoryInfo(copyPath));
+                    } catch(Exception e) {
+                        Error.Execute(TabHeight, TabWidth * 2, e.Message);
+                    }
                 }
                 Events.CallDirectoryChanged();
                 _core.NonActiveTab.DirectoryChangedEventHandler();
@@ -274,6 +272,25 @@ namespace Coal {
             else if (_selectedItem is DirectoryInfo) {
                 DeleteDirectory();
             }
+        }
+        public void F8KeyPressedHandler() {
+            string filename = MkFile.Execute(TabWidth*2, TabHeight);
+            if(filename != null && filename != string.Empty) {
+                try {
+                    FileStream fs = File.Create(_currentDirectory.FullName + "/" + filename);
+                    Events.CallDirectoryChanged();
+                    _core.NonActiveTab.DirectoryChangedEventHandler();
+                    fs.Dispose();
+                } catch(Exception e) {
+                    _core.DrawBothTabs();
+                    Error.Execute(TabHeight, TabWidth*2, e.Message);
+                }
+            }
+            else {
+                _core.DrawBothTabs();
+                Error.Execute(TabHeight, TabWidth*2, "Cannot create file.");
+            }
+            _core.DrawBothTabs();
         }
         //TODO: Переход в директорию и обратно в поиске
         public void F9KeyPressedHandler() {

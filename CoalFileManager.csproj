@@ -88,6 +88,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Terminal Emulator\Coal.CopyDir\Coal.CopyDir.csproj">
+      <Project>{aa06dd7b-9723-43dc-97cc-24c57a8dfc79}</Project>
+      <Name>Coal.CopyDir</Name>
+    </ProjectReference>
     <ProjectReference Include="Coal.Draw\Coal.Draw.csproj">
       <Project>{e19f47f2-a83a-4e71-9d51-283cccda207b}</Project>
       <Name>Coal.Draw</Name>
