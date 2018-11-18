@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Coal.Draw;
+using System.Threading;
 
 namespace Coal {
     sealed class CoalCore {
@@ -25,6 +26,8 @@ namespace Coal {
             _tab2.Draw();
         }
         public void Start() {
+            Clock.Width = _maxBufferWidth;
+            Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             CurrentTab = _tab1;
             NonActiveTab = _tab2;
             Clear.ClearBottom(_tab1.TabHeight, _maxBufferWidth);
@@ -32,6 +35,7 @@ namespace Coal {
             _tab2.Draw();
             _events.Subscribe(_tab1);
             _events.Selecter(_tab1.TabHeight);
+            clockThread.Start();
         }
         public void TabHandler() {
             if(CurrentTab == _tab1) {
