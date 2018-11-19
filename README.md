@@ -1,5 +1,6 @@
 ## **Coal File Manager** 
 [![Build Status](https://travis-ci.com/leonidlist/Coal-File-Manager.svg?branch=master)](https://travis-ci.com/leonidlist/Coal-File-Manager)   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Coverage Status](https://coveralls.io/repos/github/leonidlist/Coal-File-Manager/badge.svg?branch=master)](https://coveralls.io/github/leonidlist/Coal-File-Manager?branch=master)
 
 **Author**: [Leonid List](https://t.me/leonidlist)
 ##
