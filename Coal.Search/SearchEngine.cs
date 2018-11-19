@@ -16,6 +16,23 @@ namespace Coal.Search
         public static void ClearSearchResult() {
             _searchResult.Clear();
         }
+        public static void SearchInsideFiles(string exp, DirectoryInfo where) {
+            ArrayList arrtmp = new ArrayList();
+            SearchByExpression(@"\w*.txt", where);
+            foreach (var item in _searchResult) {
+                if (item is FileInfo) {
+                    FileInfo tmp = item as FileInfo;
+                    using (StreamReader sr = new StreamReader(File.Open(tmp.FullName, FileMode.Open))) {
+                        string all = sr.ReadToEnd();
+                        if (Regex.IsMatch(all, exp)) {
+                            arrtmp.Add(item as FileInfo);
+                        }
+                    }
+                }
+            }
+            _searchResult = arrtmp;
+        }
+
         public static void SearchByExpression(string expression, DirectoryInfo curr) {
             try {
                 ArrayList contains = new ArrayList();
@@ -24,7 +41,7 @@ namespace Coal.Search
                 foreach (var i in contains) {
                     if (i is DirectoryInfo) {
                         if (Regex.IsMatch((i as DirectoryInfo).Name, expression)) {
-                            _searchResult.Add(i as DirectoryInfo);
+                            _searchResult.Add(i as Directory);
                         }
                         SearchByExpression(expression, i as DirectoryInfo);
                     }
@@ -38,45 +55,98 @@ namespace Coal.Search
             catch (Exception) { }
         }
 
-        public static void SearchBySize(int size, DirectoryInfo curr) {
-            try {
-                ArrayList contains = new ArrayList();
-                contains.AddRange(curr.GetDirectories());
-                contains.AddRange(curr.GetFiles());
-                foreach (var i in contains) {
-                    if (i is DirectoryInfo) {
-                        SearchBySize(size, i as DirectoryInfo);
+        public static void SearchBySize(long size, DirectoryInfo curr) {
+            ArrayList contains = new ArrayList();
+            contains.AddRange(curr.GetDirectories());
+            contains.AddRange(curr.GetFiles());
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    if (GetFolderLength(i as DirectoryInfo) == size) {
+                        _searchResult.Add(i as DirectoryInfo);
                     }
-                    else {
-                        if ((i as FileInfo).Length == size) {
-                            _searchResult.Add(i as FileInfo);
-                        }
+                    SearchBySize(size, i as DirectoryInfo);
+                }
+                else {
+                    if ((i as FileInfo).Length == size) {
+                        _searchResult.Add(i as FileInfo);
                     }
                 }
             }
-            catch (Exception) { }
+        }
+
+        public static long GetFolderLength(DirectoryInfo dir) {
+            long local = 0;
+            ArrayList contains = new ArrayList();
+            contains.AddRange(dir.GetDirectories());
+            contains.AddRange(dir.GetFiles());
+            foreach (var i in contains) {
+                if (i is FileInfo) {
+                    local += (i as FileInfo).Length;
+                }
+            }
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    local += GetFolderLength(i as DirectoryInfo);
+                }
+            }
+            return local;
         }
 
         public static void SearchByCreationTime(DateTime time, DirectoryInfo curr) {
-            try {
-                ArrayList contains = new ArrayList();
-                contains.AddRange(curr.GetDirectories());
-                contains.AddRange(curr.GetFiles());
-                foreach (var i in contains) {
-                    if (i is DirectoryInfo) {
-                        if ((i as DirectoryInfo).CreationTime == time) {
-                            _searchResult.Add(i as DirectoryInfo);
-                        }
-                        SearchByCreationTime(time, i as DirectoryInfo);
+            ArrayList contains = new ArrayList();
+            contains.AddRange(curr.GetDirectories());
+            contains.AddRange(curr.GetFiles());
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    if ((i as DirectoryInfo).CreationTime == time) {
+                        _searchResult.Add(i as DirectoryInfo);
                     }
-                    else {
-                        if ((i as FileInfo).CreationTime == time) {
-                            _searchResult.Add(i as FileInfo);
-                        }
+                    SearchByCreationTime(time, i as DirectoryInfo);
+                }
+                else {
+                    if ((i as FileInfo).CreationTime == time) {
+                        _searchResult.Add(i as FileInfo);
                     }
                 }
             }
-            catch (Exception) { }
+        }
+
+        public static void SearchByLastAccessTime(DateTime time, DirectoryInfo curr) {
+            ArrayList contains = new ArrayList();
+            contains.AddRange(curr.GetDirectories());
+            contains.AddRange(curr.GetFiles());
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    if ((i as DirectoryInfo).LastAccessTime == time) {
+                        _searchResult.Add(i as DirectoryInfo);
+                    }
+                    SearchByLastAccessTime(time, i as DirectoryInfo);
+                }
+                else {
+                    if ((i as FileInfo).LastAccessTime == time) {
+                        _searchResult.Add(i as FileInfo);
+                    }
+                }
+            }
+        }
+
+        public static void SearchByModificationTime(DateTime time, DirectoryInfo curr) {
+            ArrayList contains = new ArrayList();
+            contains.AddRange(curr.GetDirectories());
+            contains.AddRange(curr.GetFiles());
+            foreach (var i in contains) {
+                if (i is DirectoryInfo) {
+                    if ((i as DirectoryInfo).LastWriteTime == time) {
+                        _searchResult.Add(i as DirectoryInfo);
+                    }
+                    SearchByModificationTime(time, i as DirectoryInfo);
+                }
+                else {
+                    if ((i as FileInfo).LastWriteTime == time) {
+                        _searchResult.Add(i as FileInfo);
+                    }
+                }
+            }
         }
     }
 }
