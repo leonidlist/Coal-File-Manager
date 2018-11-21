@@ -52,6 +52,21 @@ namespace Coal.Draw {
                         Console.Write((directoryContains[i] as FileInfo).Name);
                     }
                 }
+                else if(directoryContains[i] is DriveInfo) {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    if (i == selected) {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        selectedItem = directoryContains[i];
+                    }
+                    if ((directoryContains[i] as DriveInfo).Name.Length > (width - 2)) {
+                        Console.Write(((directoryContains[i] as DriveInfo).Name).Remove(width - 4));
+                    }
+                    else {
+                        Console.Write((directoryContains[i] as DriveInfo).Name);
+                    }
+                }
             }
         }
     }

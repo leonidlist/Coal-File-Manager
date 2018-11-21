@@ -98,13 +98,13 @@ namespace Coal.Search
             contains.AddRange(curr.GetFiles());
             foreach (var i in contains) {
                 if (i is DirectoryInfo) {
-                    if ((i as DirectoryInfo).CreationTime == time) {
+                    if ((i as DirectoryInfo).CreationTime.Year == time.Year && (i as DirectoryInfo).CreationTime.Month == time.Month && (i as DirectoryInfo).CreationTime.Day == time.Day) {
                         _searchResult.Add(i as DirectoryInfo);
                     }
                     SearchByCreationTime(time, i as DirectoryInfo);
                 }
                 else {
-                    if ((i as FileInfo).CreationTime == time) {
+                    if ((i as FileInfo).CreationTime.Year == time.Year && (i as FileInfo).CreationTime.Month == time.Month && (i as FileInfo).CreationTime.Day == time.Day) {
                         _searchResult.Add(i as FileInfo);
                     }
                 }

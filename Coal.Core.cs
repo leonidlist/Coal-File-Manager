@@ -35,6 +35,7 @@ namespace Coal {
             Clock.Width = _maxBufferWidth;
             Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             clockThread.Start();
+            Thread.Sleep(200);
             _events.Selecter(_tab1.TabHeight);
         }
         public void TabHandler() {
@@ -64,10 +65,14 @@ namespace Coal {
             Console.CursorVisible = false;
         }
         public void F10KeyPressedHandler() {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Clear();
-            Environment.Exit(0);
+            if(Draw.Confirmation.Execute(_maxBufferHeight, _maxBufferWidth, "Are you sure you want to exit?")) {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.Clear();
+                Environment.Exit(0);
+            } else {
+                DrawBothTabs();
+            }
         }
         ~CoalCore() {
             Console.BackgroundColor = ConsoleColor.Black;

@@ -51,9 +51,14 @@ namespace Coal {
                         max = (_currentTabContains[i] as FileInfo).Name.Length;
                     }
                 }
-                else {
+                else if(_currentTabContains[i] is DirectoryInfo) {
                     if ((_currentTabContains[i] as DirectoryInfo).Name.Length > max) {
                         max = (_currentTabContains[i] as DirectoryInfo).Name.Length;
+                    }
+                }
+                else if(_currentTabContains[i] is DriveInfo) {
+                    if ((_currentTabContains[i] as DriveInfo).Name.Length > max) {
+                        max = (_currentTabContains[i] as DriveInfo).Name.Length;
                     }
                 }
             }
@@ -80,7 +85,7 @@ namespace Coal {
                 _selectedIndex = 0;
                 _currentDirectory = _currentDirectory.Parent;
                 Events.CallDirectoryChanged();
-                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond, true);
                 Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
@@ -90,7 +95,18 @@ namespace Coal {
                 _selectedIndex = 0;
                 _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                 Events.CallDirectoryChanged();
-                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond, true);
+                Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                CalculateMax();
+            }
+            else if(_currentDirectory.Parent == null) {
+                _scrollOffset = 0;
+                _selectedIndex = 0;
+                _currentDirectory = null;
+                _currentTabContains.Clear();
+                _currentTabContains.AddRange(DriveInfo.GetDrives());
+                Directories.DrawCurrentDirectory(TabWidth, _currentDirectory?.FullName, _isSecond, true);
                 Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
                 Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
@@ -177,6 +193,21 @@ namespace Coal {
                         _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                     }
                     Events.CallDirectoryChanged();
+                    _core.DrawBothTabs();
+                }
+            }
+            else if(_selectedItem is DriveInfo) {
+                try {
+                    _selectedIndex = 0;
+                    _scrollOffset = 0;
+                    _currentDirectory = (_selectedItem as DriveInfo).RootDirectory;
+                    Events.CallDirectoryChanged();
+                    Directories.DrawCurrentDirectory(TabWidth, _currentDirectory.FullName, _isSecond, true);
+                    Clear.ClearTab(TabHeight, TabWidth, _scrollMaxClearValue, _isSecond);
+                    Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
+                    CalculateMax();
+                } catch (Exception) {
+                    Error.Execute(TabHeight, TabWidth * 2, "You have no permissions to enter this drive");
                     _core.DrawBothTabs();
                 }
             }
