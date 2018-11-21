@@ -6,6 +6,7 @@ using System.Threading;
 namespace Coal {
     sealed class CoalCore {
         private Events _events;
+        public event Action drawClock;
         public Events Events {
             get => _events;
         }
@@ -24,6 +25,7 @@ namespace Coal {
         public void DrawBothTabs() {
             _tab1.Draw();
             _tab2.Draw();
+            drawClock?.Invoke();
         }
         public void Start() {
             CurrentTab = _tab1;
@@ -33,10 +35,14 @@ namespace Coal {
             _tab2.Draw();
             _events.Subscribe(_tab1);
             Clock.Width = _maxBufferWidth;
+            drawClock += Clock.EventHandler;
             Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             clockThread.Start();
             Thread.Sleep(200);
             _events.Selecter(_tab1.TabHeight);
+        }
+        public void CallEventDrawClock() {
+            drawClock?.Invoke();
         }
         public void TabHandler() {
             if(CurrentTab == _tab1) {
@@ -55,6 +61,7 @@ namespace Coal {
                 Directories.DrawCurrentDirectory(_tab2.TabWidth, _tab2?.CurrentDirectory?.FullName, true, false);
                 _events.Subscribe(_tab1);
             }
+            drawClock?.Invoke();
         }
         private void SetConsoleSettings() {
             Console.BufferHeight = Console.WindowHeight;

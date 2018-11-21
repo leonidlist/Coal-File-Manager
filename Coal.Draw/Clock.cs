@@ -19,6 +19,17 @@ namespace Coal.Draw {
             }
             return DateTime.Now;
         }
+        public static void EventHandler() {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.SetCursorPosition(Width - 10, 0);
+            if (DateTime.Now.Minute < 10) {
+                Console.WriteLine(DateTime.Now.Hour + ":0" + DateTime.Now.Minute);
+            }
+            else {
+                Console.WriteLine(DateTime.Now.Hour + ":" + DateTime.Now.Minute);
+            }
+        }
         public static void Execute() {
             DateTime time = Start();
             while(true) {

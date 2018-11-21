@@ -111,6 +111,7 @@ namespace Coal {
                 Directories.DrawDirectoriesAndFiles(_currentTabContains, ref _selectedItem, _selectedIndex, TabHeight, TabWidth, _scrollOffset, _isSecond);
                 CalculateMax();
             }
+            _core.CallEventDrawClock();
         }
 
         public void ArrowDownKeyPressedHandler() {
@@ -211,6 +212,7 @@ namespace Coal {
                     _core.DrawBothTabs();
                 }
             }
+            _core.CallEventDrawClock();
         }
         public void F3KeyPressedHandler() {
             string movePath = Move.Execute(TabHeight, TabWidth*2);
