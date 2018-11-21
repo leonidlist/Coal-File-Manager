@@ -6,6 +6,7 @@ using System.IO;
 using Coal.Draw;
 using Coal.Search;
 using Coal.CopyDir;
+using System.Diagnostics;
 
 namespace Coal {
     class Tab {
@@ -157,7 +158,8 @@ namespace Coal {
             if(Confirmation.Execute(TabHeight, TabWidth*2, "Are you sure that you want to delete this file?")) {
                 (_selectedItem as FileInfo).Delete();
                 Events.CallDirectoryChanged();
-                _core.NonActiveTab.DirectoryChangedEventHandler();
+                if(_core.NonActiveTab._currentDirectory != null)
+                    _core.NonActiveTab.DirectoryChangedEventHandler();
                 _core.DrawBothTabs();
             }
             else {
@@ -194,6 +196,14 @@ namespace Coal {
                         _currentDirectory = DriveInfo.GetDrives()[0].RootDirectory;
                     }
                     Events.CallDirectoryChanged();
+                    _core.DrawBothTabs();
+                }
+            }
+            else if(_selectedItem is FileInfo) {
+                try {
+                    Process.Start((_selectedItem as FileInfo).FullName);
+                } catch(Exception e) {
+                    Error.Execute(TabHeight, TabWidth*2, e.Message);
                     _core.DrawBothTabs();
                 }
             }
@@ -312,7 +322,8 @@ namespace Coal {
                 try {
                     FileStream fs = File.Create(_currentDirectory.FullName + "/" + filename);
                     Events.CallDirectoryChanged();
-                    _core.NonActiveTab.DirectoryChangedEventHandler();
+                    if(_core.NonActiveTab._currentDirectory != null)
+                        _core.NonActiveTab.DirectoryChangedEventHandler();
                     fs.Dispose();
                 } catch(Exception e) {
                     _core.DrawBothTabs();
@@ -327,15 +338,21 @@ namespace Coal {
         }
         //TODO: Переход в директорию и обратно в поиске
         public void F9KeyPressedHandler() {
-            SearchEngine.ClearSearchResult();
-            string[] searchParams = Coal.Draw.Search.Execute(TabHeight, TabWidth*2);
-            if(searchParams!=null && searchParams[0]!=string.Empty && searchParams[1]!=string.Empty) {
-                SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
-                _currentTabContains = SearchEngine.GetSearchResult();
-                CalculateMax();
-                _currentDirectory = null;
-                _core.DrawBothTabs();
-            } else {
+            try {
+                SearchEngine.ClearSearchResult();
+                string[] searchParams = Coal.Draw.Search.Execute(TabHeight, TabWidth * 2);
+                if (searchParams != null && searchParams[0] != string.Empty && searchParams[1] != string.Empty) {
+                    SearchEngine.SearchByExpression(searchParams[0], new DirectoryInfo(searchParams[1]));
+                    _currentTabContains = SearchEngine.GetSearchResult();
+                    CalculateMax();
+                    _currentDirectory = null;
+                    _core.DrawBothTabs();
+                }
+                else {
+                    _core.DrawBothTabs();
+                }
+            } catch(Exception e) {
+                Error.Execute(TabHeight, TabWidth*2, e.Message);
                 _core.DrawBothTabs();
             }
         }

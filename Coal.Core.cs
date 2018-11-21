@@ -38,7 +38,7 @@ namespace Coal {
             drawClock += Clock.EventHandler;
             Thread clockThread = new Thread(new ThreadStart(Clock.Execute));
             clockThread.Start();
-            Thread.Sleep(200);
+            Thread.Sleep(500);
             _events.Selecter(_tab1.TabHeight);
         }
         public void CallEventDrawClock() {
